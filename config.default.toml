@@ -1,0 +1,108 @@
+[data]
+risk_ticker = "QQQ"
+safe_ticker = "IEF"
+vix_ticker = "^VIX"
+yield_ticker = "^TNX"
+start_date = "2005-01-01"
+auto_adjust = true
+include_risk_volume = true
+
+[features]
+include_categories = [
+  "trend",
+  "momentum",
+  "volatility_risk",
+  "cross_asset_macro",
+  "breadth_participation",
+  "carry_defensive",
+]
+min_history_days = 756
+target_horizon_days = 1
+use_expanded_alpha_library = true
+enable_lagged_context = true
+lag_days = [1, 2, 5]
+enable_rolling_context = true
+rolling_windows = [5, 21, 63]
+enable_feature_selection = true
+feature_selection_top_k = 90
+min_feature_non_null_ratio = 0.70
+
+[model]
+random_state = 42
+logistic_c = 0.5
+logistic_l1_c = 0.20
+ridge_alpha = 1.0
+rf_estimators = 300
+rf_max_depth = 5
+rf_min_samples_leaf = 20
+gb_estimators = 200
+gb_max_depth = 3
+gb_learning_rate = 0.03
+use_lightgbm_if_available = true
+use_xgboost_if_available = true
+threshold_grid_low = 0.35
+threshold_grid_high = 0.65
+threshold_grid_step = 0.01
+enable_regime_expert = true
+regime_expert_weight = 0.65
+min_stress_train_samples = 120
+uncertainty_penalty = 0.15
+
+[risk]
+threshold_band = 0.06
+target_annual_vol = 0.12
+max_exposure = 1.0
+max_daily_turnover = 0.30
+drawdown_de_risk_at = -0.12
+drawdown_de_risk_factor = 0.5
+stop_loss_sigma = 2.75
+tail_var_window = 63
+tail_var_floor = -0.03
+tail_risk_min_scale = 0.30
+
+[backtest]
+transaction_cost_bps = 3.0
+slippage_bps = 5.0
+execution_lag_days = 1
+rebalance_frequency = "daily"
+benchmark_apply_costs = false
+max_adv_participation = 0.15
+liquidity_lookback_days = 21
+allow_partial_fills = true
+
+[validation]
+n_splits = 5
+embargo_days = 21
+min_train_days = 756
+rolling_window_days = 252
+permutation_trials = 1000
+significance_level = 0.05
+max_oos_drawdown = -0.25
+max_tercile_sharpe_dispersion = 0.90
+institutional_baseline_enabled = true
+institutional_baseline_threshold = 0.50
+require_institutional_outperformance = true
+min_institutional_sharpe_uplift = 0.35
+min_institutional_sortino_uplift = 0.35
+min_institutional_drawdown_uplift = 0.0
+peer_suite_enabled = true
+peer_model_names = ["doubleensemble","lightgbm","mlp","tft","xgboost","catboost","tra","linear","gats","alstm"]
+peer_probability_threshold = 0.50
+require_beat_all_peers = true
+min_peer_sharpe_uplift_macro = 0.20
+min_peer_sortino_uplift_macro = 0.20
+min_peer_drawdown_uplift_macro = -0.015
+min_peer_sharpe_uplift_equity = 0.10
+min_peer_sortino_uplift_equity = 0.10
+min_peer_drawdown_uplift_equity = -0.015
+superiority_bootstrap_trials = 300
+superiority_confidence = 0.95
+dual_track_enabled = true
+equity_track_rebalance_frequency = "weekly"
+equity_track_extra_cost_bps = 5.0
+regime_method = "gmm"
+regime_states = 4
+
+[reporting]
+output_dir = "outputs/runs"
+persist_artifacts = true
