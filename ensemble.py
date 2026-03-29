@@ -10,7 +10,7 @@ from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingCla
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.model_selection import TimeSeriesSplit
 
-from amce.config.schema import ModelConfig
+from schema import ModelConfig
 
 
 def _positive_proba(model: object, X: pd.DataFrame) -> np.ndarray:

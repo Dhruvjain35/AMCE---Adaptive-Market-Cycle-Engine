@@ -3,6 +3,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from schema import BacktestConfig
+from amce_types import BacktestResult
+
 
 def rolling_sharpe(returns: pd.Series, window: int = 126) -> pd.Series:
     mu = returns.rolling(window).mean()
@@ -111,3 +114,75 @@ def compute_tercile_metrics(returns: pd.Series) -> list[dict[str, float]]:
         m["tercile"] = float(i)
         out.append(m)
     return out
+
+
+# ---------------------------------------------------------------------------
+# Backtest engine (originally in amce/backtest/engine.py)
+# ---------------------------------------------------------------------------
+
+def _rebalance_mask(index: pd.DatetimeIndex, freq: str) -> pd.Series:
+    if freq == "daily":
+        return pd.Series(True, index=index)
+    if freq == "weekly":
+        return pd.Series(index.weekday == 0, index=index)
+    if freq == "monthly":
+        month = pd.Series(index.month, index=index)
+        return month != month.shift(1)
+    raise ValueError(f"Unsupported rebalance frequency: {freq}")
+
+
+def _apply_rebalance(exposure: pd.Series, freq: str) -> pd.Series:
+    allowed = _rebalance_mask(exposure.index, freq)
+    out = exposure.copy()
+    out.loc[~allowed] = np.nan
+    return out.ffill().fillna(0.0)
+
+
+def run_backtest(df: pd.DataFrame, exposure: pd.Series, cfg: BacktestConfig) -> BacktestResult:
+    out = df.copy()
+    out["R_ret"] = out["Risk"].pct_change().fillna(0.0)
+    out["S_ret"] = out["Safe"].pct_change().fillna(0.0)
+    out["Cash_ret"] = (out["Yield"] / 100.0 / 252.0).fillna(0.0)
+
+    if "Yield_Trend_63" in out.columns:
+        yield_trend = out["Yield_Trend_63"] > 0
+    else:
+        yield_trend = out["Yield"] > out["Yield"].rolling(63).mean()
+
+    defensive_ret = np.where(yield_trend, out["Cash_ret"], out["S_ret"])
+    out["Defensive_ret"] = defensive_ret
+
+    desired = exposure.reindex(out.index).ffill().fillna(0.0)
+    lagged = desired.shift(cfg.execution_lag_days).fillna(0.0)
+    out["Exposure"] = _apply_rebalance(lagged, cfg.rebalance_frequency)
+
+    out["Gross"] = out["Exposure"] * out["R_ret"] + (1 - out["Exposure"]) * out["Defensive_ret"]
+
+    out["Turnover"] = out["Exposure"].diff().abs().fillna(0.0)
+    if "Volume" in out.columns:
+        adv = out["Volume"].rolling(cfg.liquidity_lookback_days).mean()
+        rel_adv = np.where(adv > 0, out["Volume"] / adv, 1.0)
+        cap = np.clip(cfg.max_adv_participation * rel_adv, 0.01, 1.0)
+        if cfg.allow_partial_fills:
+            out["Turnover"] = np.minimum(out["Turnover"], cap)
+        else:
+            out["Turnover"] = np.where(out["Turnover"] <= cap, out["Turnover"], 0.0)
+
+    friction = (cfg.transaction_cost_bps + cfg.slippage_bps) / 10000.0
+    out["Cost"] = out["Turnover"] * friction
+    out["Net"] = out["Gross"] - out["Cost"]
+
+    out["Benchmark_ret"] = out["R_ret"]
+    if cfg.benchmark_apply_costs:
+        out["Benchmark_ret"] = out["Benchmark_ret"] - out["Turnover"] * friction
+
+    out["Eq_Strat"] = (1 + out["Net"]).cumprod()
+    out["Eq_Bench"] = (1 + out["Benchmark_ret"]).cumprod()
+    out["DD_Strat"] = out["Eq_Strat"] / out["Eq_Strat"].cummax() - 1
+    out["DD_Bench"] = out["Eq_Bench"] / out["Eq_Bench"].cummax() - 1
+
+    return BacktestResult(
+        frame=out,
+        metrics=compute_metrics(out["Net"], benchmark_returns=out["Benchmark_ret"], turnover=out["Turnover"]),
+        benchmark_metrics=compute_metrics(out["Benchmark_ret"]),
+    )

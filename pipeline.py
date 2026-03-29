@@ -6,25 +6,16 @@ from typing import Any
 
 import pandas as pd
 
-from amce.config import PipelineConfig, load_config
-from amce.data import (
-    DataProvider,
-    YFinanceDataProvider,
-    add_lagged_features,
-    add_rolling_features,
-    load_base_frame,
-    prepare_data_pipeline,
-)
-from amce.features import (
-    compute_feature_frame,
-    feature_registry_version,
-    generate_alpha_library,
-    validate_feature_frame,
-)
-from amce.labels import add_targets
-from amce.reporting import persist_run_artifacts
-from amce.types import BacktestResult, ValidationReport
-from amce.validation import run_walk_forward_validation
+from schema import PipelineConfig
+from loader import load_config
+from providers import DataProvider, YFinanceDataProvider, load_base_frame
+from processing import prepare_data_pipeline, add_lagged_features, add_rolling_features
+from engine import compute_feature_frame, feature_registry_version, validate_feature_frame
+from alpha_library import generate_alpha_library
+from target import add_targets
+from tracker import persist_run_artifacts
+from amce_types import BacktestResult, ValidationReport
+from walkforward import run_walk_forward_validation
 
 
 def _resolve_provider(provider: DataProvider | None, cfg: PipelineConfig) -> DataProvider:

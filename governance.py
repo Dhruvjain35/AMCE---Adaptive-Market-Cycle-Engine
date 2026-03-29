@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from amce.config.schema import ValidationConfig
+from schema import ValidationConfig
 
 
 def evaluate_governance(

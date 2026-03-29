@@ -8,8 +8,8 @@ from uuid import uuid4
 
 import pandas as pd
 
-from amce.config.schema import PipelineConfig
-from amce.types import ValidationReport
+from schema import PipelineConfig
+from amce_types import ValidationReport
 
 
 def dataset_fingerprint(df: pd.DataFrame) -> str:

@@ -6,8 +6,8 @@ from typing import List, Tuple
 
 import pandas as pd
 
-from amce.features import compute_feature_frame
-from amce.labels import add_targets
+from engine import compute_feature_frame
+from target import add_targets
 
 FEATURE_COLUMNS: List[str] = [
     "Mom_21D",

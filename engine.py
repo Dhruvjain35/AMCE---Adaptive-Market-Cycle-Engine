@@ -6,10 +6,10 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
-from amce.types import FeatureFrame, FeatureSpec
+from amce_types import FeatureFrame, FeatureSpec
 
-from .formulas import compute_formula
-from .specs import get_feature_specs
+from formulas import compute_formula
+from specs import get_feature_specs
 
 
 def feature_registry_version(specs: Iterable[FeatureSpec] | None = None) -> str:

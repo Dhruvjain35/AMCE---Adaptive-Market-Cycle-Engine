@@ -7,8 +7,8 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from amce.backtest import compute_metrics, run_backtest as run_backtest_engine
-from amce.config.schema import BacktestConfig
+from metrics import compute_metrics, run_backtest as run_backtest_engine
+from schema import BacktestConfig
 
 
 

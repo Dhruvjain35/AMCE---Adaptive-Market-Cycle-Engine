@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from amce.config.schema import RiskConfig
+from schema import RiskConfig
 
 
 def apply_portfolio_constraints(

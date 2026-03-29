@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from amce.pipeline import run_pipeline
+from pipeline import run_pipeline
 
 st.set_page_config(page_title="AMCE Showcase", layout="wide")
 

@@ -8,8 +8,8 @@ from typing import Tuple
 
 import pandas as pd
 
-from amce.config.schema import DataConfig
-from amce.data import YFinanceDataProvider, load_base_frame
+from schema import DataConfig
+from providers import YFinanceDataProvider, load_base_frame
 
 
 @dataclass

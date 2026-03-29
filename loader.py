@@ -5,7 +5,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from .schema import PipelineConfig
+from schema import PipelineConfig
 
 
 def load_config(config: PipelineConfig | dict[str, Any] | str | Path | None = None) -> PipelineConfig:

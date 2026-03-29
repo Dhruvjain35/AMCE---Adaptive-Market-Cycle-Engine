@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from amce.types import FeatureSpec
+from amce_types import FeatureSpec
 
 
 def _spec(name: str, category: str, formula_id: str, warmup: int, **params: object) -> FeatureSpec:

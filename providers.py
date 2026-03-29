@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-from amce.config.schema import DataConfig
+from schema import DataConfig
 
 logger = logging.getLogger(__name__)
 

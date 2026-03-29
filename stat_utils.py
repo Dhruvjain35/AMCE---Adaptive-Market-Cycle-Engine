@@ -7,7 +7,7 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from amce.validation.stats import bootstrap_alpha_ci, permutation_test_sharpe
+from stats import bootstrap_alpha_ci, permutation_test_sharpe
 
 
 

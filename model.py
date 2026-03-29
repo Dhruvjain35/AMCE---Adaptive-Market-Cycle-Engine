@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-from amce.config.schema import ModelConfig
-from amce.models import EnsembleStack, learn_threshold
+from schema import ModelConfig
+from ensemble import EnsembleStack, learn_threshold
 
 
 

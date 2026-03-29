@@ -7,17 +7,18 @@ import pandas as pd
 from sklearn.metrics import brier_score_loss, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
-from amce.backtest import compute_metrics, compute_tercile_metrics, rolling_sharpe, run_backtest
-from amce.benchmark import build_peer_model, default_peer_model_names, get_top_peer_specs
-from amce.config.schema import BacktestConfig, PipelineConfig
-from amce.features import select_features
-from amce.models import EnsembleStack, QlibStyleBaseline, learn_threshold
-from amce.portfolio import probabilities_to_exposure
-from amce.regime import fit_regime_classifier
-from amce.types import FeatureFrame, ValidationReport
+from metrics import compute_metrics, compute_tercile_metrics, rolling_sharpe, run_backtest
+from peers import build_peer_model, default_peer_model_names, get_top_peer_specs
+from schema import BacktestConfig, PipelineConfig
+from selection import select_features
+from ensemble import EnsembleStack, learn_threshold
+from institutional_baseline import QlibStyleBaseline
+from construction import probabilities_to_exposure
+from detection import fit_regime_classifier
+from amce_types import FeatureFrame, ValidationReport
 
-from .governance import evaluate_governance
-from .stats import bootstrap_alpha_ci, bootstrap_superiority_probability, permutation_test_sharpe
+from governance import evaluate_governance
+from stats import bootstrap_alpha_ci, bootstrap_superiority_probability, permutation_test_sharpe
 
 
 @dataclass
