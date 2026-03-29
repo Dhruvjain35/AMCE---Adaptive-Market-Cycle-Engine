@@ -8,6 +8,10 @@ from typing import Any
 class DataConfig:
     risk_ticker: str = "QQQ"
     safe_ticker: str = "IEF"
+    risk_tickers: list[str] = field(default_factory=list)
+    safe_tickers: list[str] = field(default_factory=list)
+    basket_router: str = "probability"  # probability|equal
+    benchmark_ticker: str = "^GSPC"
     vix_ticker: str = "^VIX"
     yield_ticker: str = "^TNX"
     start_date: str = "2003-01-01"
