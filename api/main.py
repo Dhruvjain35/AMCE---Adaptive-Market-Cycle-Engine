@@ -309,8 +309,8 @@ async def analyze(req: AnalyzeRequest):
                 "reading": f"ST: ${st_val:.2f} | dir {st_dir:+d}",
                 "value": round(st_val, 4),
                 "direction": st_dir,
-                "atr_period": 10,
-                "factor": 3.0,
+                "atr_period": 5,
+                "factor": 2.0,
             },
         },
     }

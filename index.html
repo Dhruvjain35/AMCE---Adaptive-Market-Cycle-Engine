@@ -195,12 +195,6 @@ body {
   gap: 16px;
 }
 
-.masthead-date {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--ink-light);
-}
-
 .masthead-badge {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
@@ -294,6 +288,198 @@ body.learning-mode .mode-toggle-switch::before {
 
 .eli5-alert.hidden {
   display: none;
+}
+
+/* Interactive learning UI */
+.learn-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0 8px;
+}
+
+.pill-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.pill-btn:hover { border-color: var(--ink); color: var(--ink); }
+.pill-btn.active { border-color: var(--teal); color: var(--teal); }
+
+.mini-note {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--ink-mid);
+  max-width: 760px;
+  line-height: 1.65;
+}
+
+.hotspots {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 0;
+}
+
+.hotspot-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  border: 1px solid var(--ink-faint);
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.hotspot-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+.learn-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,25,22,0.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+.learn-overlay.visible { display: flex; }
+
+.learn-modal {
+  width: min(760px, 100%);
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  padding: 18px 18px 16px;
+}
+
+.learn-modal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--ink-faint);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.learn-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.learn-modal-close {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  border: 1px solid var(--ink-faint);
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.learn-modal-close:hover { border-color: var(--ink); color: var(--ink); }
+
+.learn-modal-body {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--ink-mid);
+}
+
+.learn-modal-body .mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.learn-row {
+  display: grid;
+  grid-template-columns: 6fr 4fr;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.sandbox {
+  border: 1px solid var(--ink-faint);
+  padding: 14px 14px 12px;
+}
+
+.sandbox-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.range {
+  width: 100%;
+}
+
+.range-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mid);
+}
+
+.explain-toggle {
+  margin-top: 10px;
+  border: 1px solid var(--ink-faint);
+  padding: 10px 12px;
+}
+
+.explain-toggle button {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink-faint);
+  background: transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--ink-mid);
+}
+.explain-toggle button:hover { border-color: var(--ink); color: var(--ink); }
+
+.why-box {
+  border: 1px solid var(--ink-faint);
+  background: var(--paper-dark);
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.why-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.why-lines {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink-mid);
+  line-height: 1.65;
 }
 
 .masthead-rule-heavy {
@@ -992,8 +1178,7 @@ body.learning-mode .mode-toggle-switch::before {
       <span class="masthead-subtitle">Adaptive Market Cycle Engine</span>
     </div>
     <div class="masthead-right">
-      <span class="masthead-date" id="masthead-date"></span>
-      <span class="masthead-badge">HACKONOMICS 2026</span>
+      <span class="masthead-badge">AMCE</span>
       <div class="mode-toggle" id="mode-toggle" title="Toggle educational explanations">
         <span class="mode-toggle-label" id="label-pro">Pro Mode</span>
         <label class="mode-toggle-switch">
@@ -1089,6 +1274,10 @@ body.learning-mode .mode-toggle-switch::before {
     <!-- SECTION 3: THE VERDICT -->
     <section class="section results-stagger s1" id="section-verdict">
       <div class="results-kicker" id="results-kicker"></div>
+      <div class="hotspots" id="hotspots-verdict">
+        <button class="hotspot-btn" onclick="openLearn('verdict')">What is the verdict?</button>
+        <button class="hotspot-btn" onclick="openLearn('regimes')">What is a regime?</button>
+      </div>
       <div class="two-col">
         <div>
           <div class="big-number-cluster">
@@ -1156,7 +1345,7 @@ body.learning-mode .mode-toggle-switch::before {
           &bull; <strong>12-1 month momentum:</strong> Jegadeesh &amp; Titman (1993), replicated across 40+ markets<br>
           &bull; <strong>VIX = 25 threshold:</strong> Standard institutional risk-management cutoff, CBOE +1 s.d.<br>
           &bull; <strong>Yield curve inversion:</strong> Fed research, 1960s&ndash;present predictive record<br>
-          &bull; <strong>Supertrend (ATR 10, factor 3):</strong> same defaults as TradingView&rsquo;s built-in indicator &mdash; volatility-adjusted trend filter</p>
+          &bull; <strong>Supertrend (ATR 5, factor 2):</strong> volatility-adjusted trend filter &mdash; tighter bands react faster to regime shifts</p>
         </div>
         <div class="chart-container" style="height: 220px; margin: 16px 0;">
           <canvas id="chart-permutation"></canvas>
@@ -1237,6 +1426,16 @@ body.learning-mode .mode-toggle-switch::before {
     <!-- SECTION 6: GROWTH OF $10K -->
     <section class="section results-stagger s4" id="section-growth">
       <h2 class="font-headline-italic" style="font-size: 32px;">Growth of $10,000</h2>
+      <div class="learn-toolbar" id="crash-toolbar">
+        <button class="pill-btn active" data-window="all" onclick="setCrashWindow('all')">Normal</button>
+        <button class="pill-btn" data-window="dotcom" onclick="setCrashWindow('dotcom')">Dot-com 2000</button>
+        <button class="pill-btn" data-window="gfc" onclick="setCrashWindow('gfc')">GFC 2008</button>
+        <button class="pill-btn" data-window="covid" onclick="setCrashWindow('covid')">COVID 2020</button>
+        <button class="hotspot-btn" onclick="openLearn('growth')">How to read this</button>
+      </div>
+      <div class="mini-note" id="crash-caption">
+        Tap a crash to zoom. You&rsquo;ll learn the one lesson retail investors miss: drawdowns compound against you.
+      </div>
       <div class="chart-container" style="height: 360px; margin-top: 24px;">
         <canvas id="chart-growth"></canvas>
       </div>
@@ -1253,6 +1452,13 @@ body.learning-mode .mode-toggle-switch::before {
       </div>
 
       <div class="live-signal-display" id="live-signal-display"></div>
+      <div class="explain-toggle">
+        <button onclick="toggleWhyToday()">Why am I seeing this signal today?</button>
+        <div class="why-box" id="why-today" style="display:none;">
+          <div class="why-title">Today&rsquo;s decision, explained</div>
+          <div class="why-lines" id="why-lines"></div>
+        </div>
+      </div>
       <div class="two-by-two" id="signal-cards"></div>
     </section>
 
@@ -1276,6 +1482,33 @@ body.learning-mode .mode-toggle-switch::before {
 
   </div><!-- /results-container -->
 </div><!-- /container -->
+
+<!-- Learning overlay (hotspots) -->
+<div class="learn-overlay" id="learn-overlay" onclick="closeLearn(event)">
+  <div class="learn-modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+    <div class="learn-modal-top">
+      <div class="learn-modal-title" id="learn-title"></div>
+      <button class="learn-modal-close" onclick="closeLearn()">Close</button>
+    </div>
+    <div class="learn-modal-body" id="learn-body"></div>
+    <div class="learn-row" id="learn-row" style="display:none;">
+      <div class="sandbox">
+        <div class="sandbox-label">Risk tolerance sandbox</div>
+        <input class="range" type="range" id="dd-slider" min="-60" max="-10" step="1" value="-25" oninput="updateSandbox()">
+        <div class="range-row">
+          <span class="mono">Max drawdown I can tolerate</span>
+          <span class="mono" id="dd-value">-25%</span>
+        </div>
+        <div class="mini-note" id="sandbox-note" style="margin-top:10px;"></div>
+      </div>
+      <div class="sandbox">
+        <div class="sandbox-label">Build your own rules (toy)</div>
+        <div id="toy-rules" class="mini-note"></div>
+        <div class="mini-note" id="toy-note" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════
@@ -1302,14 +1535,12 @@ const COLORS = {
 const AMCE_STATE = {
   learningMode: true,
   lastData: null,
+  crashWindow: 'all',
 };
 
 /* ═══════════════════════════════════════
    DATE SETUP
    ═══════════════════════════════════════ */
-document.getElementById('masthead-date').textContent =
-  new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
 // Learning Mode toggle state and wiring
 (function initLearningModeToggle() {
   const body = document.body;
@@ -1529,7 +1760,7 @@ function renderResults(data) {
     ['200-Day MA Filter', comps.ma200.signal],
     ['VIX Regime', comps.vix.signal],
     ['Yield Curve', comps.yield_curve.signal],
-    ['Supertrend (ATR 10, 3.0)', comps.supertrend.signal],
+    ['Supertrend (ATR 5, 2.0)', comps.supertrend.signal],
   ];
   document.getElementById('signal-table').innerHTML = rows.map(([name, on]) =>
     `<div class="signal-row">
@@ -1658,9 +1889,254 @@ function renderResults(data) {
 
   // ── Live signal section ──
   renderLiveSignal(data);
+  updateWhyToday();
 
   // ── Scroll to results ──
   document.getElementById('section-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ═══════════════════════════════════════
+   INTERACTIVE LEARNING: hotspots + sandbox
+   ═══════════════════════════════════════ */
+const LEARN_CONTENT = {
+  verdict: {
+    title: "The Verdict (what matters)",
+    body: `
+      <p>Retail investors often focus on <span class="mono">return</span>. Institutions focus on <span class="mono">return per unit of risk</span>.</p>
+      <p>That&rsquo;s why this page shows <span class="mono">CAGR</span> and <span class="mono">Max Drawdown</span> together.</p>
+      <p><span class="mono">CAGR</span> tells you how fast wealth grows. <span class="mono">Max Drawdown</span> tells you the worst pain you would have had to survive.</p>
+    `,
+    showSandbox: true,
+  },
+  regimes: {
+    title: "Market regimes (why rules work)",
+    body: `
+      <p>Markets behave like weather. There are &ldquo;calm&rdquo; weeks where trends persist, and &ldquo;storm&rdquo; weeks where fear dominates.</p>
+      <p>AMCE labels each period and changes exposure when enough independent signals agree.</p>
+      <p>In Learning Mode, treat the model like a seatbelt: it won&rsquo;t make every day better, but it matters most in crashes.</p>
+    `,
+    showSandbox: false,
+  },
+  growth: {
+    title: "Growth of $10,000 (how compounding feels)",
+    body: `
+      <p>This chart answers one question: <em>&ldquo;If I started with $10,000, what would I end with?&rdquo;</em></p>
+      <p>Try the crash buttons. The lesson is simple: big drawdowns take years to recover from, because losses compound against you.</p>
+      <p>Institutions build systems to avoid the deepest drawdowns, even if it means missing some upside.</p>
+    `,
+    showSandbox: true,
+  },
+};
+
+function openLearn(key) {
+  const overlay = document.getElementById('learn-overlay');
+  const title = document.getElementById('learn-title');
+  const body = document.getElementById('learn-body');
+  const row = document.getElementById('learn-row');
+  const content = LEARN_CONTENT[key] || LEARN_CONTENT.verdict;
+  title.textContent = content.title;
+  body.innerHTML = content.body;
+  row.style.display = content.showSandbox ? 'grid' : 'none';
+  overlay.classList.add('visible');
+  if (content.showSandbox) {
+    renderToyRules();
+    updateSandbox();
+  }
+}
+
+function closeLearn(e) {
+  if (e && e.target && e.target.closest && e.target.closest('.learn-modal')) return;
+  document.getElementById('learn-overlay').classList.remove('visible');
+}
+
+function toggleWhyToday() {
+  const el = document.getElementById('why-today');
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  if (!open) updateWhyToday();
+}
+
+function updateWhyToday() {
+  const data = AMCE_STATE.lastData;
+  if (!data) return;
+  const sig = data.current_signal;
+  const c = sig.components;
+  const learning = !!AMCE_STATE.learningMode;
+  const lines = [];
+
+  function onOff(x) { return x ? 'ON' : 'OFF'; }
+  function tick(x) { return x ? '✓' : '✗'; }
+
+  const explain = {
+    momentum: learning
+      ? "Train momentum: ride it when it&rsquo;s speeding up."
+      : "Momentum: intermediate trend filter (12-1).",
+    ma200: learning
+      ? "Ocean tide: above MA means tide in."
+      : "MA200: long-term trend filter.",
+    vix: learning
+      ? "Fear thermometer: above 25 means panic."
+      : "VIX: volatility regime filter.",
+    yield: learning
+      ? "Canary: inversion warns recession."
+      : "Yield curve: macro warning signal.",
+    st: learning
+      ? "Seatbelt: ATR bands tighten when markets get rough."
+      : "Supertrend: ATR band trend filter.",
+  };
+
+  lines.push(`${tick(c.momentum.signal)} Momentum ${onOff(c.momentum.signal)} — ${explain.momentum}`);
+  lines.push(`${tick(c.ma200.signal)} MA200 ${onOff(c.ma200.signal)} — ${explain.ma200}`);
+  lines.push(`${tick(c.vix.signal)} VIX ${onOff(c.vix.signal)} — ${explain.vix}`);
+  lines.push(`${tick(c.yield_curve.signal)} Yield ${onOff(c.yield_curve.signal)} — ${explain.yield}`);
+  lines.push(`${tick(c.supertrend.signal)} Supertrend ${onOff(c.supertrend.signal)} — ${explain.st}`);
+
+  const decision = sig.overall === 'RISK-ON'
+    ? `Decision: HOLD ${data.risk_asset} (risk assets)`
+    : sig.overall === 'RISK-OFF'
+      ? `Decision: HOLD ${data.safe_asset} (safety)`
+      : `Decision: 50/50 ${data.risk_asset} + ${data.safe_asset}`;
+
+  document.getElementById('why-lines').innerHTML =
+    `<div class="mono">${decision}</div><div style="margin-top:8px;">${lines.map(x => `• ${x}`).join('<br>')}</div>`;
+}
+
+function updateSandbox() {
+  const data = AMCE_STATE.lastData;
+  const slider = document.getElementById('dd-slider');
+  const ddVal = document.getElementById('dd-value');
+  const note = document.getElementById('sandbox-note');
+  if (!data || !slider) return;
+  const threshold = parseInt(slider.value, 10);
+  ddVal.textContent = `${threshold}%`;
+
+  const dd = (data.drawdown || []).map(r => ({
+    date: r.date,
+    amce: r.amce_dd != null ? r.amce_dd * 100 : null,
+    spy: r.spy_dd != null ? r.spy_dd * 100 : null,
+  })).filter(r => r.amce != null && r.spy != null);
+
+  const amceBreaches = dd.filter(r => r.amce <= threshold).length;
+  const spyBreaches = dd.filter(r => r.spy <= threshold).length;
+  const n = dd.length || 1;
+  const amcePct = (amceBreaches / n) * 100;
+  const spyPct = (spyBreaches / n) * 100;
+
+  note.innerHTML = `With a tolerance of <span class="mono">${threshold}%</span>, AMCE breached your comfort zone in <span class="mono">${amcePct.toFixed(1)}%</span> of OOS days, vs SPY in <span class="mono">${spyPct.toFixed(1)}%</span>.`;
+}
+
+function renderToyRules() {
+  const data = AMCE_STATE.lastData;
+  const host = document.getElementById('toy-rules');
+  const note = document.getElementById('toy-note');
+  if (!host || !note) return;
+  if (!data) {
+    host.innerHTML = 'Run an analysis first.';
+    return;
+  }
+
+  const ids = [
+    ['momentum', 'Momentum'],
+    ['ma200', 'MA200'],
+    ['vix', 'VIX'],
+    ['yield_curve', 'Yield'],
+    ['supertrend', 'Supertrend'],
+  ];
+
+  host.innerHTML = ids.map(([id, label]) =>
+    `<label style="display:flex;align-items:center;gap:10px;margin:6px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-mid);">
+      <input type="checkbox" data-rule="${id}" checked onchange="computeToy()">
+      <span>${label}</span>
+    </label>`
+  ).join('');
+
+  note.innerHTML = `<span class="mono">Toy simulator:</span> toggles change a simplified exposure score on your historical signals. It does not change the real AMCE results.`;
+
+  computeToy();
+}
+
+function computeToy() {
+  const data = AMCE_STATE.lastData;
+  const note = document.getElementById('toy-note');
+  if (!data || !note) return;
+  const checks = Array.from(document.querySelectorAll('#toy-rules input[type="checkbox"]'));
+  const enabled = new Set(checks.filter(c => c.checked).map(c => c.getAttribute('data-rule')));
+  if (enabled.size === 0) {
+    note.innerHTML = `<span class="mono">Toy simulator:</span> turn on at least one rule.`;
+    return;
+  }
+
+  const sigs = (data.signals || []).map(r => ({
+    date: r.date,
+    risk: r.risk_close,
+    safe: r.safe_close,
+    mom: r.mom_signal,
+    ma: r.ma_signal,
+    vix: r.vix_signal,
+    yld: r.yield_signal,
+    st: r.st_signal,
+  })).filter(r => r.risk != null && r.safe != null);
+
+  const k = enabled.size;
+  const exposures = [];
+  for (let i = 0; i < sigs.length; i++) {
+    const s = sigs[i];
+    let score = 0;
+    if (enabled.has('momentum')) score += (s.mom ? 1 : 0);
+    if (enabled.has('ma200')) score += (s.ma ? 1 : 0);
+    if (enabled.has('vix')) score += (s.vix ? 1 : 0);
+    if (enabled.has('yield_curve')) score += (s.yld ? 1 : 0);
+    if (enabled.has('supertrend')) score += (s.st ? 1 : 0);
+
+    // Keep the same mapping idea, scaled to enabled rules:
+    // full risk-on if >= ceil(0.6*k), partial if == ceil(0.4*k), else risk-off.
+    const full = Math.ceil(0.6 * k);
+    const partial = Math.ceil(0.4 * k);
+    let exp = 0.0;
+    if (score >= full) exp = 1.0;
+    else if (score >= partial) exp = 0.5;
+    else exp = 0.0;
+    exposures.push(exp);
+  }
+
+  // Approximate equity using close-to-close returns (frontend toy)
+  let eq = 1.0;
+  let trades = 0;
+  for (let i = 1; i < sigs.length; i++) {
+    const prevExp = exposures[i - 1];       // decision at i-1
+    const expLag = prevExp;                // toy lag built-in by using prev day
+    const riskRet = (sigs[i].risk / sigs[i - 1].risk) - 1;
+    const safeRet = (sigs[i].safe / sigs[i - 1].safe) - 1;
+    const gross = expLag * riskRet + (1 - expLag) * safeRet;
+    if (exposures[i] !== exposures[i - 1]) trades += 1;
+    eq *= (1 + gross);
+  }
+
+  const inMkt = exposures.filter(x => x > 0).length / exposures.length * 100;
+  const years = Math.max((sigs.length / 252), 0.01);
+  const cagr = Math.pow(eq, 1 / years) - 1;
+  const tradesPerYear = trades / years;
+
+  note.innerHTML =
+    `<span class="mono">Toy result:</span> CAGR ≈ <span class="mono">${(cagr * 100).toFixed(1)}%</span>, in-market <span class="mono">${inMkt.toFixed(1)}%</span>, trades/yr ≈ <span class="mono">${tradesPerYear.toFixed(1)}</span>.`;
+}
+
+function setCrashWindow(key) {
+  AMCE_STATE.crashWindow = key;
+  document.querySelectorAll('#crash-toolbar .pill-btn').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('data-window') === key);
+  });
+  if (AMCE_STATE.lastData) {
+    renderGrowthChart(AMCE_STATE.lastData);
+  }
+  const cap = document.getElementById('crash-caption');
+  const captions = {
+    all: "Normal view. Compounding is quiet until it isn't.",
+    dotcom: "Dot-com bust: a long grind down teaches patience and risk control.",
+    gfc: "2008 GFC: leverage breaks systems fast. Drawdowns matter.",
+    covid: "COVID crash: speed matters. Rules can react faster than emotions.",
+  };
+  if (cap) cap.textContent = captions[key] || captions.all;
 }
 
 /* ═══════════════════════════════════════
@@ -2029,7 +2505,25 @@ function renderGrowthChart(data) {
     options: {
       responsive: true, maintainAspectRatio: false,
       scales: {
-        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 8, maxRotation: 0 } },
+        x: {
+          display: true,
+          grid: { display: false },
+          ticks: { maxTicksLimit: 8, maxRotation: 0 },
+          min: (function() {
+            const w = AMCE_STATE.crashWindow;
+            if (w === 'dotcom') return '1999-01-01';
+            if (w === 'gfc') return '2007-01-01';
+            if (w === 'covid') return '2019-06-01';
+            return undefined;
+          })(),
+          max: (function() {
+            const w = AMCE_STATE.crashWindow;
+            if (w === 'dotcom') return '2003-12-31';
+            if (w === 'gfc') return '2011-12-31';
+            if (w === 'covid') return '2021-12-31';
+            return undefined;
+          })(),
+        },
         y: { position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false },
              ticks: { callback: v => '$' + v.toLocaleString() } },
       },
@@ -2149,7 +2643,7 @@ function renderLiveSignal(data) {
     {
       header: 'Supertrend',
       name: 'Supertrend',
-      detail: `Line: $${(st.value != null ? st.value : 0).toFixed(2)} &nbsp;|&nbsp; ATR 10, factor 3.0`,
+      detail: `Line: $${(st.value != null ? st.value : 0).toFixed(2)} &nbsp;|&nbsp; ATR 5, factor 2.0`,
       reading: st.reading || `Direction ${st.direction != null ? st.direction : 0} \u2192 ${st.signal ? 'Bullish (uptrend)' : 'Bearish (downtrend)'}`,
       signal: st.signal,
       explain: 'Plain English: TradingView-style Supertrend &mdash; price vs ATR bands. Bullish when the model is in the +1 direction (uptrend leg).',

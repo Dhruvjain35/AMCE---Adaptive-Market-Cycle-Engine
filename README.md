@@ -1,6 +1,6 @@
 # AMCE — Adaptive Market Cycle Engine
 
-A trend-following macro rotation strategy with a newspaper-editorial educational web interface. Built for the **Hackonomics 2026** hackathon.
+A trend-following macro rotation strategy with a newspaper-editorial educational web interface.
 
 ## What It Does
 
@@ -12,7 +12,7 @@ AMCE rotates between a risk-on asset (QQQ) and a risk-off asset (IEF) using five
 | 200-Day Moving Average | Faber (2007) | Price > MA |
 | VIX Regime Filter | CBOE distributional +1 s.d. | < 25 |
 | Yield Curve | Estrella & Mishkin (1996) | Spread > 0 |
-| Supertrend | TradingView-style ATR bands | ATR length 10, factor 3.0 (bullish = +1 direction) |
+| Supertrend | TradingView-style ATR bands | ATR length 5, factor 2.0 (bullish = +1 direction) |
 
 **Out-of-sample results (2016–2024):**
 - AMCE: **+17.2% CAGR**, Sharpe **1.00**

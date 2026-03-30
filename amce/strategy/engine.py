@@ -97,11 +97,11 @@ def _supertrend(
     high: pd.Series,
     low: pd.Series,
     close: pd.Series,
-    atr_period: int = 10,
-    factor: float = 3.0,
+    atr_period: int = 5,
+    factor: float = 2.0,
 ) -> tuple[pd.Series, pd.Series, pd.Series]:
     """
-    Supertrend (TradingView-compatible defaults: ATR length 10, factor 3.0).
+    Supertrend (TradingView-style defaults: ATR length 5, factor 2.0).
 
     Implementation follows the standard band-trailing algorithm used by
     pandas_ta / common TA libraries (Wilder ATR via EWM, then iterative
@@ -484,8 +484,8 @@ def run_strategy(
         risk_ohlc["high"],
         risk_ohlc["low"],
         risk_ohlc["close"],
-        atr_period=10,
-        factor=3.0,
+        atr_period=5,
+        factor=2.0,
     )
 
     # ── 3. Build signals DataFrame ─────────────────────────────────
