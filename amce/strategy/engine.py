@@ -2,17 +2,19 @@
 AMCE Trend-Following Macro Rotation Strategy
 =============================================
 
-A four-rule, zero-optimisation systematic strategy that rotates between
+A five-rule, zero-optimisation systematic strategy that rotates between
 risk-on (QQQ) and risk-off (IEF) using slow-moving, economically-motivated
 signals.
 
 Every threshold is fixed and justified by decades of academic and
-practitioner evidence - none are fitted to data:
+practitioner evidence — none are fitted to data:
 
   * 200-day MA  : Faber (2007), "A Quantitative Approach to TAA"
   * 12-1 momentum: Jegadeesh & Titman (1993), cross-sectional momentum
   * VIX 20/25   : CBOE long-run median ~19; 25 = +1 s.d. stress
   * Yield curve 0: Estrella & Mishkin (1996), inversion => recession
+  * Supertrend  : ATR volatility bands (TradingView defaults: ATR length 10,
+                  factor 3.0) — trend filter; no optimisation vs history
 
 No parameter was chosen by backtesting. No parameter is tuned in-sample.
 """
@@ -20,7 +22,7 @@ No parameter was chosen by backtesting. No parameter is tuned in-sample.
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -66,6 +68,94 @@ def _fetch_prices(
         close.columns = tickers
     close = close.ffill().dropna(how="all")
     return close
+
+
+def _ohlc_column(frame: pd.DataFrame, name: str) -> pd.Series:
+    """yfinance may return a 1-column DataFrame for a single ticker under MultiIndex columns."""
+    col = frame[name]
+    if isinstance(col, pd.DataFrame):
+        return col.iloc[:, 0]
+    return col
+
+
+def _fetch_ohlc(ticker: str, start: str, end: str) -> pd.DataFrame:
+    """Download adjusted OHLC for one ticker (for Supertrend high/low/close)."""
+    raw = yf.download(ticker, start=start, end=end, auto_adjust=True, progress=False)
+    if raw.empty:
+        raise ValueError(f"No OHLC data returned for {ticker}")
+    high = _ohlc_column(raw, "High")
+    low = _ohlc_column(raw, "Low")
+    close = _ohlc_column(raw, "Close")
+    ohlc = pd.DataFrame(
+        {"high": high, "low": low, "close": close},
+        index=raw.index,
+    )
+    return ohlc.ffill().dropna(how="all")
+
+
+def _supertrend(
+    high: pd.Series,
+    low: pd.Series,
+    close: pd.Series,
+    atr_period: int = 10,
+    factor: float = 3.0,
+) -> tuple[pd.Series, pd.Series, pd.Series]:
+    """
+    Supertrend (TradingView-compatible defaults: ATR length 10, factor 3.0).
+
+    Implementation follows the standard band-trailing algorithm used by
+    pandas_ta / common TA libraries (Wilder ATR via EWM, then iterative
+    upper/lower bands). Returns:
+
+      supertrend : float line value
+      direction  : +1 = bullish / uptrend (close tracking lower band),
+                   -1 = bearish / downtrend
+      st_signal  : 1 = risk-on (bullish), 0 = not bullish
+    """
+    hl2 = (high + low) / 2.0
+    prev_close = close.shift(1)
+    tr = pd.concat(
+        [high - low, (high - prev_close).abs(), (low - prev_close).abs()],
+        axis=1,
+    ).max(axis=1)
+    atr = tr.ewm(alpha=1.0 / atr_period, min_periods=atr_period, adjust=False).mean()
+
+    upper = (hl2 + factor * atr).to_numpy(dtype=float, copy=True)
+    lower = (hl2 - factor * atr).to_numpy(dtype=float, copy=True)
+    c = close.to_numpy(dtype=float, copy=False)
+    n = len(close)
+    dir_ = np.ones(n, dtype=np.int8)
+    trend = np.full(n, np.nan, dtype=float)
+
+    for i in range(1, n):
+        if np.isnan(upper[i]) or np.isnan(lower[i]):
+            continue
+        if c[i] > upper[i - 1]:
+            dir_[i] = 1
+        elif c[i] < lower[i - 1]:
+            dir_[i] = -1
+        else:
+            dir_[i] = dir_[i - 1]
+            if dir_[i] > 0 and lower[i] < lower[i - 1]:
+                lower[i] = lower[i - 1]
+            if dir_[i] < 0 and upper[i] > upper[i - 1]:
+                upper[i] = upper[i - 1]
+
+        if dir_[i] > 0:
+            trend[i] = lower[i]
+        else:
+            trend[i] = upper[i]
+
+    if n > 0 and not np.isnan(upper[0]) and not np.isnan(lower[0]):
+        trend[0] = lower[0] if dir_[0] > 0 else upper[0]
+
+    idx = close.index
+    supertrend = pd.Series(trend, index=idx, name="supertrend")
+    direction = pd.Series(dir_, index=idx, name="st_direction").astype(int)
+    st_signal = (direction == 1).astype(int)
+    st_signal = st_signal.where(atr.notna(), 0)
+    st_signal = st_signal.rename("st_signal")
+    return supertrend, direction, st_signal
 
 
 # ─── Signal construction ────────────────────────────────────────────
@@ -145,7 +235,7 @@ def _composite_exposure(score: pd.Series) -> pd.Series:
     """
     Majority-vote exposure rule.
 
-    score >= 3 of 4 signals bullish  =>  full risk-on  (1.0)
+    score >= 3 of 5 signals bullish  =>  full risk-on  (1.0)
     score == 2                       =>  partial        (0.5)
     score <= 1                       =>  risk-off       (0.0)
 
@@ -363,9 +453,15 @@ def run_strategy(
 
     prices = _fetch_prices(price_tickers, start=start_date, end=end_date)
     macro = _fetch_prices(macro_tickers, start=start_date, end=end_date)
+    risk_ohlc = _fetch_ohlc(risk_ticker, start=start_date, end=end_date)
 
     # Align all data to common dates
     all_data = prices.join(macro, how="inner").dropna()
+    risk_ohlc = risk_ohlc.reindex(all_data.index).ffill()
+    risk_close_series = all_data[risk_ticker]
+    risk_ohlc["high"] = risk_ohlc["high"].fillna(risk_close_series)
+    risk_ohlc["low"] = risk_ohlc["low"].fillna(risk_close_series)
+    risk_ohlc["close"] = risk_ohlc["close"].fillna(risk_close_series)
 
     if len(all_data) < 300:
         raise ValueError(
@@ -384,10 +480,19 @@ def run_strategy(
     ma = _ma200_signal(risk_close)
     vix_sig = _vix_signal(vix)
     yc_sig = _yield_curve_signal(tnx, irx)
+    st_line, st_dir, st_sig = _supertrend(
+        risk_ohlc["high"],
+        risk_ohlc["low"],
+        risk_ohlc["close"],
+        atr_period=10,
+        factor=3.0,
+    )
 
     # ── 3. Build signals DataFrame ─────────────────────────────────
     signals = pd.DataFrame({
         "risk_close": risk_close,
+        "risk_high": risk_ohlc["high"],
+        "risk_low": risk_ohlc["low"],
         "safe_close": all_data[safe_ticker],
         "benchmark_close": all_data[benchmark_ticker],
         "vix": vix,
@@ -397,6 +502,9 @@ def run_strategy(
         "ma_signal": ma,
         "vix_signal": vix_sig,
         "yield_signal": yc_sig,
+        "st_signal": st_sig,
+        "supertrend": st_line,
+        "st_direction": st_dir,
     }, index=all_data.index)
 
     signals["score"] = (
@@ -404,6 +512,7 @@ def run_strategy(
         + signals["ma_signal"]
         + signals["vix_signal"]
         + signals["yield_signal"]
+        + signals["st_signal"]
     )
 
     # ── 4. Compute exposure with execution rules ───────────────────

@@ -4,7 +4,7 @@ A trend-following macro rotation strategy with a newspaper-editorial educational
 
 ## What It Does
 
-AMCE rotates between a risk-on asset (QQQ) and a risk-off asset (IEF) using four economically-motivated signals — none of which are optimized or fitted to data:
+AMCE rotates between a risk-on asset (QQQ) and a risk-off asset (IEF) using five economically-motivated signals — none of which are optimized or fitted to data:
 
 | Signal | Source | Threshold |
 |--------|--------|-----------|
@@ -12,6 +12,7 @@ AMCE rotates between a risk-on asset (QQQ) and a risk-off asset (IEF) using four
 | 200-Day Moving Average | Faber (2007) | Price > MA |
 | VIX Regime Filter | CBOE distributional +1 s.d. | < 25 |
 | Yield Curve | Estrella & Mishkin (1996) | Spread > 0 |
+| Supertrend | TradingView-style ATR bands | ATR length 10, factor 3.0 (bullish = +1 direction) |
 
 **Out-of-sample results (2016–2024):**
 - AMCE: **+17.2% CAGR**, Sharpe **1.00**
@@ -102,6 +103,6 @@ Returns `{"status": "ok"}`.
 The web app teaches quantitative finance concepts using live results:
 
 1. **Market regimes** — how fear/greed cycles work, with the 2020 COVID crash as a case study
-2. **Overfitting** — why 4 rules beat 400, with a permutation test visualization
+2. **Overfitting** — why a small rule set beats 400 parameters, with a permutation test visualization
 3. **Institutional comparison** — Sharpe ratios vs SPY, 60/40, and hedge fund benchmarks
 4. **Transaction costs** — why low turnover matters, gross vs net equity curves

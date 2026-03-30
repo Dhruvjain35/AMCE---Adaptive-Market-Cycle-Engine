@@ -927,7 +927,7 @@ body {
 <div class="container">
   <section class="hero" id="section-strategy">
     <div class="hero-kicker">Quantitative Finance</div>
-    <h1 class="hero-headline">Can a four-rule system<br>beat the market?</h1>
+    <h1 class="hero-headline">Can a five-rule system<br>beat the market?</h1>
     <p class="hero-body">
       Most retail investors lose to the S&amp;P 500 not because they pick bad
       stocks &mdash; but because they hold through drawdowns they cannot stomach.
@@ -1036,7 +1036,7 @@ body {
           <p>Markets don't move in straight lines. They cycle between periods of calm expansion &mdash; where
           trend-following works &mdash; and periods of fear and dislocation where holding through losses
           destroys wealth.</p>
-          <p>AMCE classifies every week into one of three states using four independent signals: momentum
+          <p>AMCE classifies every week into one of three states using five independent signals: momentum
           (are prices trending up?), structure (is price above its long-term average?), fear (what is
           the VIX telling us?), and fundamentals (what is the yield curve saying about the economy?).</p>
           <p>When three or more signals agree, the model takes a full position. When only two agree, it takes
@@ -1053,17 +1053,18 @@ body {
 
       <!-- Panel 2: Overfitting -->
       <div class="edu-panel animate-fade-up" style="animation-delay: 80ms;">
-        <div class="edu-panel-title">Why 4 rules instead of 400?</div>
+        <div class="edu-panel-title">Why 5 rules instead of 400?</div>
         <div class="edu-panel-body">
           <p>The most common mistake in quantitative finance is overfitting &mdash; building a model so
           precisely tuned to historical data that it captures noise instead of signal. A strategy with 50
           parameters, each optimized on the same dataset it will be tested on, can show spectacular
           backtested performance and fail completely in live trading.</p>
-          <p>AMCE uses four signals, each with thresholds set by academic research, not optimization:</p>
+          <p>AMCE uses five signals, each with thresholds set by academic research or platform defaults, not optimization:</p>
           <p>&bull; <strong>200-day MA threshold:</strong> Faber (2007), <em>"A Quantitative Approach to Tactical Asset Allocation"</em><br>
           &bull; <strong>12-1 month momentum:</strong> Jegadeesh &amp; Titman (1993), replicated across 40+ markets<br>
           &bull; <strong>VIX = 25 threshold:</strong> Standard institutional risk-management cutoff, CBOE +1 s.d.<br>
-          &bull; <strong>Yield curve inversion:</strong> Fed research, 1960s&ndash;present predictive record</p>
+          &bull; <strong>Yield curve inversion:</strong> Fed research, 1960s&ndash;present predictive record<br>
+          &bull; <strong>Supertrend (ATR 10, factor 3):</strong> same defaults as TradingView&rsquo;s built-in indicator &mdash; volatility-adjusted trend filter</p>
         </div>
         <div class="chart-container" style="height: 220px; margin: 16px 0;">
           <canvas id="chart-permutation"></canvas>
@@ -1387,6 +1388,7 @@ function renderResults(data) {
     ['200-Day MA Filter', comps.ma200.signal],
     ['VIX Regime', comps.vix.signal],
     ['Yield Curve', comps.yield_curve.signal],
+    ['Supertrend (ATR 10, 3.0)', comps.supertrend.signal],
   ];
   document.getElementById('signal-table').innerHTML = rows.map(([name, on]) =>
     `<div class="signal-row">
@@ -1395,9 +1397,9 @@ function renderResults(data) {
     </div>`
   ).join('');
 
-  const scoreLabels = { 4: 'Full risk-on', 3: 'Full risk-on', 2: 'Partial exposure', 1: 'Risk-off', 0: 'Risk-off' };
+  const scoreLabels = { 5: 'Full risk-on', 4: 'Full risk-on', 3: 'Full risk-on', 2: 'Partial exposure', 1: 'Risk-off', 0: 'Risk-off' };
   document.getElementById('signal-score').textContent =
-    `Score: ${sig.score}/4 \u2192 ${scoreLabels[sig.score]}`;
+    `Score: ${sig.score}/5 \u2192 ${scoreLabels[sig.score]}`;
 
   // ── Stat boxes ──
   document.getElementById('stat-boxes').innerHTML = [
@@ -1438,7 +1440,7 @@ function renderResults(data) {
     `Our strategy is in the top ${topP.toFixed(1)}% of all ${perm.null_distribution.length.toLocaleString()} random (shuffled-signal) strategies by Sharpe ratio.`;
 
   document.getElementById('insight-peer').textContent =
-    `AMCE's out-of-sample Sharpe of ${sm.sharpe.toFixed(2)} places it in the range of institutional-grade systematic strategies, achieved with four rules and no optimization.`;
+    `AMCE's out-of-sample Sharpe of ${sm.sharpe.toFixed(2)} places it in the range of institutional-grade systematic strategies, achieved with five rules and no optimization.`;
 
   document.getElementById('insight-cost').textContent =
     `AMCE averages ${costs.trades_per_year.toFixed(1)} round-trips per year \u2014 compared to day-traders who may execute hundreds. This keeps annual transaction costs below ${costs.annual_drag_bps.toFixed(0)} basis points.`;
@@ -1895,14 +1897,15 @@ function renderLiveSignal(data) {
   const ma = comps.ma200;
   const vx = comps.vix;
   const yc = comps.yield_curve;
+  const st = comps.supertrend || { signal: false, value: 0, direction: 0, reading: '' };
 
   let signalClass = 'partial';
   let signalText = 'PARTIAL EXPOSURE';
   let signalExplain = `50% ${riskAsset}, 50% ${safeAsset}. Mixed signals.`;
   if (sig.overall === 'RISK-ON') {
     signalClass = 'risk-on'; signalText = 'RISK-ON';
-    signalExplain = sig.score >= 4
-      ? `Hold ${riskAsset}. All four signals favor risk assets.`
+    signalExplain = sig.score >= 5
+      ? `Hold ${riskAsset}. All five signals favor risk assets.`
       : `Hold ${riskAsset}. Three or more signals favor risk assets.`;
   } else if (sig.overall === 'RISK-OFF') {
     signalClass = 'risk-off'; signalText = 'RISK-OFF';
@@ -1952,6 +1955,14 @@ function renderLiveSignal(data) {
       reading: `Spread: ${spread >= 0 ? '+' : ''}${spread} bps \u2192 ${yc.signal ? 'Normal' : 'Inverted'}`,
       signal: yc.signal,
       explain: 'Plain English: An inverted yield curve (3M > 10Y) has preceded every US recession since 1960.',
+    },
+    {
+      header: 'Supertrend',
+      name: 'Supertrend',
+      detail: `Line: $${(st.value != null ? st.value : 0).toFixed(2)} &nbsp;|&nbsp; ATR 10, factor 3.0`,
+      reading: st.reading || `Direction ${st.direction != null ? st.direction : 0} \u2192 ${st.signal ? 'Bullish (uptrend)' : 'Bearish (downtrend)'}`,
+      signal: st.signal,
+      explain: 'Plain English: TradingView-style Supertrend &mdash; price vs ATR bands. Bullish when the model is in the +1 direction (uptrend leg).',
     },
   ];
 

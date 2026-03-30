@@ -259,6 +259,9 @@ async def analyze(req: AnalyzeRequest):
                 "ma_signal",
                 "vix_signal",
                 "yield_signal",
+                "st_signal",
+                "supertrend",
+                "st_direction",
                 "score",
                 "exposure",
                 "regime",
@@ -266,9 +269,13 @@ async def analyze(req: AnalyzeRequest):
         ]
     )
 
+    st_val = float(last["supertrend"]) if pd.notna(last["supertrend"]) else 0.0
+    st_dir = int(last["st_direction"]) if pd.notna(last["st_direction"]) else 0
+
     current_signal = {
         "overall": overall,
         "score": score,
+        "date": last_date,
         "components": {
             "momentum": {
                 "signal": bool(last["mom_signal"]),
@@ -296,6 +303,14 @@ async def analyze(req: AnalyzeRequest):
                 "tnx": round(tnx_val, 2),
                 "irx": round(irx_val, 2),
                 "spread_bps": spread_bps,
+            },
+            "supertrend": {
+                "signal": bool(last["st_signal"]),
+                "reading": f"ST: ${st_val:.2f} | dir {st_dir:+d}",
+                "value": round(st_val, 4),
+                "direction": st_dir,
+                "atr_period": 10,
+                "factor": 3.0,
             },
         },
     }
