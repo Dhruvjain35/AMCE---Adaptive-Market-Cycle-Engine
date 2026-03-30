@@ -1,100 +1,107 @@
-# AMCE Industry-Grade Quant Research Platform
+# AMCE — Adaptive Market Cycle Engine
 
-AMCE is a modular quantitative research platform for daily macro ETF/index strategies.
-It provides a config-driven pipeline with:
+A trend-following macro rotation strategy with a newspaper-editorial educational web interface. Built for the **Hackonomics 2026** hackathon.
 
-- ~50 indicator feature library across trend, momentum, volatility/risk, macro, breadth, and carry/defensive buckets.
-- Expanded candidate alpha library (100+ engineered signals) with fold-safe feature selection.
-- Purged walk-forward validation with embargo.
-- Interpretable ensemble modeling (regularized linear + trees + optional LightGBM/XGBoost with meta-calibration).
-- Portfolio construction with vol targeting, turnover caps, and drawdown de-risking.
-- Backtest realism (execution lag, rebalance schedule, transaction costs, slippage).
-- Regime detection engine (`gmm|kmeans|hmm|volatility`) with regime-aware expert blending.
-- Governance promotion gates (`max drawdown`, `significance`, `stability`, `risk-adjusted benchmark beat`).
-- Institutional baseline comparison gate versus a Qlib LightGBM Alpha158-style public benchmark.
-- Head-to-head 10-peer league table against top Qlib benchmark families with strict pass/fail gates.
-- Artifact tracking (config snapshot, dataset fingerprint, feature/model version, fold metrics, OOS report).
+## What It Does
 
-## Architecture
+AMCE rotates between a risk-on asset (QQQ) and a risk-off asset (IEF) using four economically-motivated signals — none of which are optimized or fitted to data:
 
-Core package: `amce/`
+| Signal | Source | Threshold |
+|--------|--------|-----------|
+| 12-1 Month Momentum | Jegadeesh & Titman (1993) | > 0 |
+| 200-Day Moving Average | Faber (2007) | Price > MA |
+| VIX Regime Filter | CBOE distributional +1 s.d. | < 25 |
+| Yield Curve | Estrella & Mishkin (1996) | Spread > 0 |
 
-- `config/`: typed pipeline configs and TOML/JSON loader
-- `data/`: provider protocol + free-data provider (`yfinance`) + injectable providers
-- `features/`: registry-driven feature engine + large alpha library + feature selection
-- `labels/`: target generation
-- `models/`: ensemble stack and threshold learning
-- `portfolio/`: exposure/risk budget construction
-- `backtest/`: execution/friction simulator + performance metrics
-- `regime/`: probabilistic and clustering-based regime classification
-- `validation/`: walk-forward, permutation/alpha stats, governance gates
-- `benchmark/`: top-10 peer model proxies and benchmark metadata
-- `models/institutional_baseline.py`: Qlib-style public institutional reference baseline
-- `reporting/`: run artifact persistence
-- `pipeline.py`: public entrypoints
+**Out-of-sample results (2016–2024):**
+- AMCE: **+17.2% CAGR**, Sharpe **1.00**
+- S&P 500: +14.5% CAGR, Sharpe 0.85
+- All figures after 5bps transaction costs
 
-Thin UI: `trading_app.py` (no embedded model logic)
+## Tech Stack
 
-## Public API
-
-- `run_pipeline(config) -> ValidationReport`
-- `run_backtest(config) -> BacktestResult`
-- `run_diagnostics(config) -> dict`
-
-`config` can be:
-
-- `PipelineConfig`
-- `dict`
-- path to `.toml` or `.json`
+- **Backend:** FastAPI (Python) — `api/main.py`
+- **Frontend:** Single HTML file — `index.html` (vanilla JS + Chart.js)
+- **Strategy Engine:** `amce/strategy/engine.py` (zero dependencies beyond pandas/numpy/yfinance)
 
 ## Quickstart
 
-Install dependencies:
+### 1. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run pipeline via script:
+### 2. Start the API server
 
 ```bash
-python scripts/run_pipeline.py --config config.default.toml
+uvicorn api.main:app --reload --port 8000
 ```
 
-Run Streamlit UI:
+### 3. Serve the frontend
 
 ```bash
-streamlit run trading_app.py
+python -m http.server 3000
 ```
 
-## Defaults
+### 4. Open in browser
 
-- Universe: daily macro ETF/index workflow
-- Objective: robust OOS risk-adjusted performance
-- Validation: purged walk-forward + embargo
-- Significance gate: permutation `p < 0.05`
-- Drawdown gate: OOS `max_drawdown >= -25%`
-- Institutional uplift gate: AMCE must beat Qlib-style baseline by minimum Sharpe/Sortino uplift
-- Peer league gate: AMCE must beat all configured peer models on macro + equity-track uplifts and superiority confidence
-
-## Public Institutional Reference
-
-AMCE now benchmarks against a **Qlib LightGBM Alpha158-style baseline**, inspired by the public Microsoft Qlib workflow and benchmark setup:
-
-- [Qlib LightGBM Alpha158 workflow config](https://github.com/microsoft/qlib/blob/main/examples/benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml)
-- [Qlib benchmark table (annualized return, information ratio, max drawdown)](https://github.com/microsoft/qlib/blob/main/examples/benchmarks/README.md)
-
-## Testing
-
-```bash
-pytest -q
+```
+http://localhost:3000
 ```
 
-Test coverage includes:
+Click **"Run Analysis →"** to see results.
 
-- indicator formula correctness and anti-leakage checks
-- labeling and backtest math
-- peer suite model fit/predict contract checks
-- deterministic end-to-end pipeline run on fixture data
-- data-provider swap contract parity
-- UI smoke checks ensuring app remains a thin pipeline client
+## Project Structure
+
+```
+├── index.html              # Frontend (single file, vanilla JS + Chart.js)
+├── api/
+│   ├── __init__.py
+│   └── main.py             # FastAPI backend (POST /api/analyze)
+├── amce/
+│   ├── __init__.py
+│   └── strategy/
+│       ├── __init__.py
+│       └── engine.py        # Strategy engine (DO NOT MODIFY)
+├── requirements.txt
+└── README.md
+```
+
+## API
+
+### `POST /api/analyze`
+
+**Request:**
+```json
+{
+  "risk_asset": "QQQ",
+  "safe_asset": "IEF",
+  "start_year": 2005,
+  "end_year": 2024
+}
+```
+
+**Response:** Full analysis including metrics, equity curves, signals, regime history, permutation test results, and educational statistics.
+
+### `GET /health`
+
+Returns `{"status": "ok"}`.
+
+## Anti-Overfitting Guarantees
+
+1. **No lookahead bias** — all signals use `.shift(1)` before computing exposure
+2. **No parameter optimization** — every threshold is fixed and academically sourced
+3. **Transaction costs** — 5bps applied to every trade
+4. **Walk-forward split** — 2005–2015 development, 2016–2024 out-of-sample
+5. **Permutation test** — 1,000 shuffled-signal trials confirm statistical significance
+6. **Weekly rebalance** — Mondays only, with 10-day minimum holding period
+
+## Educational Focus
+
+The web app teaches quantitative finance concepts using live results:
+
+1. **Market regimes** — how fear/greed cycles work, with the 2020 COVID crash as a case study
+2. **Overfitting** — why 4 rules beat 400, with a permutation test visualization
+3. **Institutional comparison** — Sharpe ratios vs SPY, 60/40, and hedge fund benchmarks
+4. **Transaction costs** — why low turnover matters, gross vs net equity curves

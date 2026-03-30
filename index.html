@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMCE - Adaptive Market Cycle Engine</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+   ═══════════════════════════════════════ */
+:root {
+  --paper: #f7f4ee;
+  --paper-dark: #ede9e0;
+  --ink: #1a1916;
+  --ink-mid: #4a4740;
+  --ink-light: #8a8780;
+  --ink-faint: #c8c5be;
+  --teal: #0f766e;
+  --teal-light: #e0f2f1;
+  --red: #b91c1c;
+  --red-light: #fef2f2;
+  --gold: #92400e;
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════ */
+.font-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+}
+
+.font-headline-italic {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.font-mono {
+  font-family: 'DM Mono', 'Courier New', monospace;
+}
+
+.font-body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════ */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.section {
+  padding: 48px 0;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--ink-faint);
+  margin: 0;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 65fr 35fr;
+  gap: 48px;
+}
+
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+.six-col {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.two-by-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flipIn {
+  from { opacity: 0; transform: perspective(400px) rotateX(90deg); }
+  to { opacity: 1; transform: perspective(400px) rotateX(0); }
+}
+
+@keyframes progressBar {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 300ms ease-out forwards;
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeUp 400ms ease-out forwards;
+}
+
+.animate-flip {
+  opacity: 0;
+  animation: flipIn 300ms ease-out forwards;
+}
+
+/* ═══════════════════════════════════════
+   MASTHEAD
+   ═══════════════════════════════════════ */
+.masthead {
+  padding: 20px 0 0;
+  animation: fadeIn 300ms ease-out;
+}
+
+.masthead-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.masthead-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.masthead-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.masthead-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+}
+
+.masthead-right {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.masthead-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-light);
+}
+
+.masthead-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  border: 1px solid var(--teal);
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+
+.masthead-rule-heavy {
+  border: none;
+  border-top: 2px solid var(--ink);
+  margin-top: 12px;
+}
+
+.masthead-rule-light {
+  border: none;
+  border-top: 1px solid var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* Nav pills */
+.nav-pills {
+  display: flex;
+  gap: 0;
+  padding: 10px 0;
+}
+
+.nav-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  text-decoration: none;
+  padding: 6px 18px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+  transition: color 150ms, border-color 150ms;
+}
+
+.nav-pill:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* ═══════════════════════════════════════
+   SECTION 1: THE QUESTION
+   ═══════════════════════════════════════ */
+.hero {
+  padding: 80px 0 48px;
+  text-align: center;
+}
+
+.hero-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.results-stagger {
+  opacity: 0;
+  animation: fadeUp 400ms ease-out forwards;
+}
+.results-stagger.s1 { animation-delay: 0ms; }
+.results-stagger.s2 { animation-delay: 80ms; }
+.results-stagger.s3 { animation-delay: 160ms; }
+.results-stagger.s4 { animation-delay: 240ms; }
+.results-stagger.s5 { animation-delay: 320ms; }
+
+.turnover-lines {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mid);
+  line-height: 2;
+  margin: 16px 0;
+  max-width: 520px;
+}
+.turnover-lines span { color: var(--ink); }
+
+.perm-caption {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--ink-mid);
+  margin-top: 12px;
+  max-width: 560px;
+}
+
+.hero-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+.hero-body {
+  font-family: 'Source Serif 4', serif;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--ink-mid);
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════
+   SECTION 2: CONTROLS
+   ═══════════════════════════════════════ */
+.controls-box {
+  border: 1px solid var(--ink-faint);
+  padding: 24px;
+  margin-bottom: 0;
+}
+
+.controls-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.control-group label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+}
+
+.control-group select,
+.control-group input {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.control-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8780'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.control-group input[type="number"] {
+  -moz-appearance: textfield;
+}
+.control-group input[type="number"]::-webkit-inner-spin-button,
+.control-group input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.btn-run {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  background: var(--ink);
+  border: none;
+  padding: 10px 28px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms;
+  text-transform: uppercase;
+}
+
+.btn-run:hover {
+  background: var(--teal);
+}
+
+.btn-run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Progress */
+.progress-area {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.progress-bar-track {
+  width: 120px;
+  height: 2px;
+  background: var(--ink-faint);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--teal);
+  width: 0;
+  transition: width 300ms ease-out;
+}
+
+.progress-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-light);
+}
+
+.progress-area.hidden { display: none; }
+
+/* ═══════════════════════════════════════
+   SECTION 3: THE VERDICT
+   ═══════════════════════════════════════ */
+#results-container {
+  display: none;
+}
+
+#results-container.visible {
+  display: block;
+}
+
+.results-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.big-number-cluster {
+  margin-bottom: 24px;
+}
+
+.big-number-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.big-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1.1;
+}
+
+.big-number.negative { color: var(--red); }
+
+.big-number-sub {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  color: var(--ink-light);
+  margin-top: 4px;
+}
+
+.comparison-line {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--ink-mid);
+  margin-bottom: 24px;
+}
+
+/* Signal display */
+.signal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.signal-header-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.signal-pill {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 8px 24px;
+  color: var(--paper);
+}
+
+.signal-pill.risk-on { background: var(--teal); }
+.signal-pill.risk-off { background: var(--red); }
+.signal-pill.partial { background: var(--gold); }
+
+.signal-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-light);
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* Signal breakdown table */
+.signal-table {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.signal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.signal-row:nth-child(odd) {
+  background: rgba(26, 25, 22, 0.02);
+}
+
+.signal-name {
+  color: var(--ink);
+}
+
+.signal-status {
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.signal-status.on { color: var(--teal); }
+.signal-status.off { color: var(--red); }
+
+.signal-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mid);
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* Stat boxes */
+.stat-box {
+  border: 1px solid var(--ink-faint);
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.stat-box-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-box-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════ */
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+}
+
+/* ═══════════════════════════════════════
+   SECTION 4: EDUCATION
+   ═══════════════════════════════════════ */
+.education-header {
+  margin-bottom: 8px;
+}
+
+.education-subhead {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  color: var(--ink-mid);
+  margin-bottom: 40px;
+}
+
+.edu-panel {
+  border-left: 3px solid var(--teal);
+  padding-left: 24px;
+  margin-bottom: 48px;
+}
+
+.edu-panel-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.edu-panel-body {
+  font-family: 'Source Serif 4', serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--ink-mid);
+  max-width: 640px;
+}
+
+.edu-panel-body p {
+  margin-bottom: 12px;
+}
+
+.key-insight {
+  background: var(--paper-dark);
+  border: 1px solid var(--ink-faint);
+  padding: 14px;
+  margin-top: 20px;
+}
+
+.key-insight-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.key-insight-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-mid);
+}
+
+/* Comparison table (CSS grid, not HTML table) */
+.comp-table {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0;
+  margin: 20px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.comp-cell {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ink-faint);
+  color: var(--ink-mid);
+}
+
+.comp-cell.header {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink-faint);
+}
+
+.comp-cell.highlight {
+  border-left: 3px solid var(--teal);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   SECTION 5: TEARSHEET
+   ═══════════════════════════════════════ */
+.tearsheet-subhead {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+/* Metric strip */
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin-top: 32px;
+}
+
+.metric-box {
+  border: 1px solid var(--ink-faint);
+  padding: 16px 20px;
+  text-align: center;
+  margin-left: -1px;
+}
+
+.metric-box:first-child { margin-left: 0; }
+
+.metric-box-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.metric-box-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 24px;
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════
+   SECTION 6: GROWTH
+   ═══════════════════════════════════════ */
+.summary-boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.summary-box {
+  padding: 20px;
+  border: 1px solid var(--ink-faint);
+}
+
+.summary-box.highlight {
+  border-left: 3px solid var(--teal);
+}
+
+.summary-box-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.summary-box-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: var(--ink);
+}
+
+.summary-box-value.positive { color: var(--teal); }
+.summary-box-value.negative { color: var(--red); }
+
+/* ═══════════════════════════════════════
+   SECTION 7: LIVE SIGNAL
+   ═══════════════════════════════════════ */
+.live-signal-display {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.live-signal-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.live-signal-text.risk-on { color: var(--teal); }
+.live-signal-text.risk-off { color: var(--red); }
+.live-signal-text.partial { color: var(--gold); }
+
+.live-signal-explanation {
+  font-family: 'Source Serif 4', serif;
+  font-size: 16px;
+  color: var(--ink-mid);
+  margin-top: 8px;
+}
+
+.signal-card {
+  border: 1px solid var(--ink-faint);
+  padding: 20px;
+}
+
+.signal-card-header {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.signal-card-name {
+  font-family: 'Source Serif 4', serif;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.signal-card-reading {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.signal-card-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.signal-card-status.bullish { color: var(--teal); }
+.signal-card-status.bearish { color: var(--red); }
+
+.signal-card-explain {
+  font-family: 'Source Serif 4', serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════ */
+.footer {
+  padding: 32px 0 48px;
+}
+
+.footer-methodology {
+  font-family: 'Source Serif 4', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-light);
+  line-height: 1.7;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.footer-credit {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .hero-headline { font-size: 36px; }
+  .two-col { grid-template-columns: 1fr; gap: 32px; }
+  .three-col { grid-template-columns: 1fr; }
+  .six-col { grid-template-columns: repeat(3, 1fr); }
+  .metric-strip { grid-template-columns: repeat(3, 1fr); }
+  .summary-boxes { grid-template-columns: 1fr; }
+  .controls-row { flex-wrap: wrap; }
+  .big-number { font-size: 48px; }
+  .two-by-two { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     MASTHEAD
+     ═══════════════════════════════════════ -->
+<div class="container masthead">
+  <div class="masthead-inner">
+    <div class="masthead-left">
+      <span class="masthead-title">AMCE</span>
+      <span class="masthead-subtitle">Adaptive Market Cycle Engine</span>
+    </div>
+    <div class="masthead-right">
+      <span class="masthead-date" id="masthead-date"></span>
+      <span class="masthead-badge">HACKONOMICS 2026</span>
+    </div>
+  </div>
+  <hr class="masthead-rule-heavy">
+  <hr class="masthead-rule-light">
+  <nav class="nav-pills">
+    <a href="#section-strategy" class="nav-pill">Strategy</a>
+    <a href="#section-education" class="nav-pill">Education</a>
+    <a href="#section-methodology" class="nav-pill">Methodology</a>
+    <a href="#section-signal" class="nav-pill">Live Signal</a>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 1: THE QUESTION
+     ═══════════════════════════════════════ -->
+<div class="container">
+  <section class="hero" id="section-strategy">
+    <div class="hero-kicker">Quantitative Finance</div>
+    <h1 class="hero-headline">Can a four-rule system<br>beat the market?</h1>
+    <p class="hero-body">
+      Most retail investors lose to the S&amp;P 500 not because they pick bad
+      stocks &mdash; but because they hold through drawdowns they cannot stomach.
+      Institutional quant desks use systematic rules to decide when to be
+      in the market and when to step back. This is one of them.
+    </p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════
+       SECTION 2: CONTROLS
+       ═══════════════════════════════════════ -->
+  <section class="section" id="section-controls">
+    <div class="controls-box">
+      <div class="controls-label">Analyze</div>
+      <div class="controls-row">
+        <div class="control-group">
+          <label for="risk-asset">Risk Asset</label>
+          <select id="risk-asset">
+            <option value="QQQ" selected>QQQ</option>
+            <option value="SPY">SPY</option>
+            <option value="IWM">IWM</option>
+            <option value="EEM">EEM</option>
+            <option value="TQQQ">TQQQ</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="safe-asset">Safe Asset</label>
+          <select id="safe-asset">
+            <option value="IEF" selected>IEF</option>
+            <option value="TLT">TLT</option>
+            <option value="SHY">SHY</option>
+            <option value="GLD">GLD</option>
+            <option value="BIL">BIL</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="start-year">Start</label>
+          <input type="number" id="start-year" value="2005" min="2003" max="2023">
+        </div>
+        <div class="control-group">
+          <label for="end-year">End</label>
+          <input type="number" id="end-year" value="2024" min="2010" max="2026">
+        </div>
+        <div class="control-group" style="flex: 0 0 auto;">
+          <label>&nbsp;</label>
+          <button class="btn-run" id="btn-run" onclick="runAnalysis()">Run Analysis &rarr;</button>
+        </div>
+      </div>
+      <div class="progress-area hidden" id="progress-area">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+        <span class="progress-text" id="progress-text"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       RESULTS (hidden until analysis runs)
+       ═══════════════════════════════════════ -->
+  <div id="results-container">
+
+    <hr class="section-divider">
+
+    <!-- SECTION 3: THE VERDICT -->
+    <section class="section results-stagger s1" id="section-verdict">
+      <div class="results-kicker" id="results-kicker"></div>
+      <div class="two-col">
+        <div>
+          <div class="big-number-cluster">
+            <div class="big-number-label">AMCE</div>
+            <div class="big-number" id="big-cagr"></div>
+            <div class="big-number-sub">CAGR (annualized)</div>
+          </div>
+          <div class="comparison-line" id="comparison-line"></div>
+          <div class="chart-container" style="height: 220px;">
+            <canvas id="chart-regime"></canvas>
+          </div>
+        </div>
+        <div>
+          <div class="signal-header">
+            <div class="signal-header-label">Current Signal</div>
+            <div id="signal-pill-container"></div>
+            <div class="signal-date" id="signal-date"></div>
+          </div>
+          <div class="signal-table" id="signal-table"></div>
+          <div class="signal-score" id="signal-score"></div>
+          <div id="stat-boxes"></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 4: EDUCATION -->
+    <section class="section results-stagger s2" id="section-education">
+      <h2 class="font-headline-italic education-header" style="font-size: 36px;">Understanding the Results</h2>
+      <p class="education-subhead">Each concept below is explained using your actual results &mdash; not textbook examples.</p>
+
+      <!-- Panel 1: Regimes -->
+      <div class="edu-panel animate-fade-up" style="animation-delay: 0ms;">
+        <div class="edu-panel-title">What is a market regime?</div>
+        <div class="edu-panel-body">
+          <p>Markets don't move in straight lines. They cycle between periods of calm expansion &mdash; where
+          trend-following works &mdash; and periods of fear and dislocation where holding through losses
+          destroys wealth.</p>
+          <p>AMCE classifies every week into one of three states using four independent signals: momentum
+          (are prices trending up?), structure (is price above its long-term average?), fear (what is
+          the VIX telling us?), and fundamentals (what is the yield curve saying about the economy?).</p>
+          <p>When three or more signals agree, the model takes a full position. When only two agree, it takes
+          a half position. When one or zero agree, it steps to safety.</p>
+        </div>
+        <div class="chart-container" style="height: 180px; margin: 16px 0;">
+          <canvas id="chart-covid"></canvas>
+        </div>
+        <div class="key-insight">
+          <div class="key-insight-label">Key Insight</div>
+          <div class="key-insight-text" id="insight-regime"></div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Overfitting -->
+      <div class="edu-panel animate-fade-up" style="animation-delay: 80ms;">
+        <div class="edu-panel-title">Why 4 rules instead of 400?</div>
+        <div class="edu-panel-body">
+          <p>The most common mistake in quantitative finance is overfitting &mdash; building a model so
+          precisely tuned to historical data that it captures noise instead of signal. A strategy with 50
+          parameters, each optimized on the same dataset it will be tested on, can show spectacular
+          backtested performance and fail completely in live trading.</p>
+          <p>AMCE uses four signals, each with thresholds set by academic research, not optimization:</p>
+          <p>&bull; <strong>200-day MA threshold:</strong> Faber (2007), <em>"A Quantitative Approach to Tactical Asset Allocation"</em><br>
+          &bull; <strong>12-1 month momentum:</strong> Jegadeesh &amp; Titman (1993), replicated across 40+ markets<br>
+          &bull; <strong>VIX = 25 threshold:</strong> Standard institutional risk-management cutoff, CBOE +1 s.d.<br>
+          &bull; <strong>Yield curve inversion:</strong> Fed research, 1960s&ndash;present predictive record</p>
+        </div>
+        <div class="chart-container" style="height: 220px; margin: 16px 0;">
+          <canvas id="chart-permutation"></canvas>
+        </div>
+        <p class="perm-caption" id="perm-caption"></p>
+        <div class="key-insight">
+          <div class="key-insight-label">Key Insight</div>
+          <div class="key-insight-text" id="insight-overfit"></div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Peer comparison -->
+      <div class="edu-panel animate-fade-up" style="animation-delay: 160ms;">
+        <div class="edu-panel-title">How does this compare to a hedge fund?</div>
+        <div class="edu-panel-body">
+          <p>Institutional performance is measured by Sharpe ratio &mdash; the return per unit of risk taken.
+          A Sharpe above 0.5 is considered good. Above 1.0 is considered excellent. Most hedge funds target
+          0.8&ndash;1.2 after fees.</p>
+          <p>The 60/40 portfolio &mdash; 60% stocks, 40% bonds &mdash; is the standard benchmark for moderate-risk
+          investing. It has historically achieved a Sharpe of approximately 0.45&ndash;0.55.</p>
+        </div>
+        <div class="comp-table" id="comp-table"></div>
+        <div class="key-insight">
+          <div class="key-insight-label">Key Insight</div>
+          <div class="key-insight-text" id="insight-peer"></div>
+        </div>
+      </div>
+
+      <!-- Panel 4: Costs -->
+      <div class="edu-panel animate-fade-up" style="animation-delay: 240ms;">
+        <div class="edu-panel-title">What does this cost to run?</div>
+        <div class="edu-panel-body">
+          <p>Every trade has a cost. Bid-ask spreads, commissions, and market impact eat into returns.
+          High-frequency strategies can lose most of their alpha to transaction costs.
+          AMCE is designed to trade infrequently.</p>
+        </div>
+        <div class="turnover-lines" id="turnover-lines"></div>
+        <div class="chart-container" style="height: 180px; margin: 16px 0;">
+          <canvas id="chart-gross-net"></canvas>
+        </div>
+        <div class="key-insight">
+          <div class="key-insight-label">Key Insight</div>
+          <div class="key-insight-text" id="insight-cost"></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 5: TEARSHEET -->
+    <section class="section results-stagger s3" id="section-methodology">
+      <h2 class="font-headline-italic" style="font-size: 36px;">Performance Tearsheet</h2>
+      <div class="tearsheet-subhead" id="tearsheet-subhead"></div>
+
+      <div class="three-col">
+        <div class="chart-container" style="height: 220px;">
+          <canvas id="chart-equity"></canvas>
+        </div>
+        <div class="chart-container" style="height: 220px;">
+          <canvas id="chart-rolling-sharpe"></canvas>
+        </div>
+        <div class="chart-container" style="height: 220px;">
+          <canvas id="chart-drawdown"></canvas>
+        </div>
+      </div>
+
+      <div class="metric-strip" id="metric-strip"></div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 6: GROWTH OF $10K -->
+    <section class="section results-stagger s4" id="section-growth">
+      <h2 class="font-headline-italic" style="font-size: 32px;">Growth of $10,000</h2>
+      <div class="chart-container" style="height: 360px; margin-top: 24px;">
+        <canvas id="chart-growth"></canvas>
+      </div>
+      <div class="summary-boxes" id="summary-boxes"></div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- SECTION 7: LIVE SIGNAL -->
+    <section class="section results-stagger s5" id="section-signal">
+      <h2 class="font-headline-italic" style="font-size: 32px;">Today's Signal</h2>
+      <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px;">
+        Updated Daily &middot; Based on Yesterday's Close
+      </div>
+
+      <div class="live-signal-display" id="live-signal-display"></div>
+      <div class="two-by-two" id="signal-cards"></div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-methodology">
+        <strong>Methodology note.</strong> Strategy signals are computed using end-of-week close prices
+        with a one-day execution lag. All performance figures are after 5 basis points transaction costs
+        per trade. No parameters were optimised in-sample &mdash; every threshold is derived from
+        published academic research or established market structure.
+        Walk-forward validation: 2005&ndash;2015 development period, 2016&ndash;2024
+        out-of-sample. Benchmark is SPY total return (auto-adjusted).
+        Data source: Yahoo Finance. This is an educational tool, not investment advice.
+      </div>
+      <div class="footer-credit">
+        Built for Hackonomics 2026 &middot; Educating others about economics through quantitative finance
+      </div>
+    </footer>
+
+  </div><!-- /results-container -->
+</div><!-- /container -->
+
+<script>
+/* ═══════════════════════════════════════
+   CHART.JS GLOBAL DEFAULTS
+   ═══════════════════════════════════════ */
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#8a8780';
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.elements.point.radius = 0;
+Chart.defaults.animation.duration = 800;
+Chart.defaults.animation.easing = 'easeOutQuart';
+
+const COLORS = {
+  paper: '#f7f4ee', paperDark: '#ede9e0',
+  ink: '#1a1916', inkMid: '#4a4740', inkLight: '#8a8780', inkFaint: '#c8c5be',
+  teal: '#0f766e', tealLight: '#e0f2f1',
+  red: '#b91c1c', redLight: '#fef2f2',
+  gold: '#92400e',
+  tealAlpha: 'rgba(15,118,110,0.06)', redAlpha: 'rgba(185,28,28,0.06)',
+  tealFill: 'rgba(15,118,110,0.15)', redFill: 'rgba(185,28,28,0.08)',
+};
+
+/* ═══════════════════════════════════════
+   DATE SETUP
+   ═══════════════════════════════════════ */
+document.getElementById('masthead-date').textContent =
+  new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+/* ═══════════════════════════════════════
+   NUMBER ANIMATION
+   ═══════════════════════════════════════ */
+function animateNumber(el, target, duration = 1200, prefix = '', suffix = '', decimals = 1) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = target * ease;
+    el.textContent = prefix + val.toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══════════════════════════════════════
+   CHART INSTANCES (for cleanup)
+   ═══════════════════════════════════════ */
+let charts = {};
+
+function destroyCharts() {
+  Object.values(charts).forEach(c => { if (c) c.destroy(); });
+  charts = {};
+}
+
+function pct(v) { return (v * 100).toFixed(1); }
+function pctSigned(v) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; }
+
+/* ═══════════════════════════════════════
+   TOOLTIP PLUGIN
+   ═══════════════════════════════════════ */
+const customTooltip = {
+  backgroundColor: '#f7f4ee',
+  borderColor: '#c8c5be',
+  borderWidth: 1,
+  titleColor: '#1a1916',
+  bodyColor: '#4a4740',
+  titleFont: { family: "'DM Mono', monospace", size: 11 },
+  bodyFont: { family: "'DM Mono', monospace", size: 11 },
+  padding: { x: 14, y: 10 },
+  cornerRadius: 0,
+  displayColors: false,
+};
+
+/* ═══════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════ */
+const PROGRESS_MESSAGES = [
+  'Fetching price history...',
+  'Computing momentum signals...',
+  'Running permutation test (1,000 shuffles)...',
+  'Building regime timeline...',
+  'Analysis complete.',
+];
+
+async function showProgress() {
+  const area = document.getElementById('progress-area');
+  const bar = document.getElementById('progress-bar');
+  const text = document.getElementById('progress-text');
+  area.classList.remove('hidden');
+
+  for (let i = 0; i < PROGRESS_MESSAGES.length - 1; i++) {
+    text.textContent = PROGRESS_MESSAGES[i];
+    bar.style.width = ((i + 1) / PROGRESS_MESSAGES.length * 100) + '%';
+    await new Promise(r => setTimeout(r, 400));
+  }
+}
+
+function finishProgress() {
+  const bar = document.getElementById('progress-bar');
+  const text = document.getElementById('progress-text');
+  bar.style.width = '100%';
+  text.textContent = PROGRESS_MESSAGES[PROGRESS_MESSAGES.length - 1];
+}
+
+function hideProgress() {
+  document.getElementById('progress-area').classList.add('hidden');
+}
+
+/* ═══════════════════════════════════════
+   MAIN ANALYSIS FUNCTION
+   ═══════════════════════════════════════ */
+async function runAnalysis() {
+  const btn = document.getElementById('btn-run');
+  btn.disabled = true;
+  btn.textContent = 'Running...';
+
+  const riskAsset = document.getElementById('risk-asset').value;
+  const safeAsset = document.getElementById('safe-asset').value;
+  const startYear = parseInt(document.getElementById('start-year').value);
+  const endYear = parseInt(document.getElementById('end-year').value);
+
+  showProgress();
+
+  try {
+    const res = await fetch('http://localhost:8000/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        risk_asset: riskAsset,
+        safe_asset: safeAsset,
+        start_year: startYear,
+        end_year: endYear,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Analysis failed');
+    }
+
+    const data = await res.json();
+    finishProgress();
+    await new Promise(r => setTimeout(r, 300));
+    hideProgress();
+    renderResults(data);
+  } catch (e) {
+    hideProgress();
+    alert('Error: ' + e.message + '\n\nMake sure the API server is running:\nuvicorn api.main:app --reload --port 8000');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Run Analysis →';
+}
+
+/* ═══════════════════════════════════════
+   RENDER ALL RESULTS
+   ═══════════════════════════════════════ */
+function renderResults(data) {
+  destroyCharts();
+
+  const container = document.getElementById('results-container');
+  container.classList.add('visible');
+  container.style.animation = 'none';
+  container.offsetHeight; // reflow
+  container.style.animation = '';
+  document.querySelectorAll('.results-stagger').forEach((el) => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  });
+
+  const sm = data.metrics;
+  const bm = data.benchmark_metrics;
+  const bm6040 = data.benchmark_6040_metrics;
+  const sig = data.current_signal;
+  const perm = data.permutation;
+  const wealth = data.wealth;
+  const costs = data.costs;
+  const riskAsset = data.risk_asset;
+  const safeAsset = data.safe_asset;
+
+  // ── Verdict kicker ──
+  document.getElementById('results-kicker').textContent =
+    `OUT-OF-SAMPLE RESULTS \u00B7 ${data.oos_start.slice(0,4)}\u2013${data.oos_end.slice(0,4)}`;
+
+  // ── Big CAGR number ──
+  const bigEl = document.getElementById('big-cagr');
+  bigEl.className = 'big-number' + (sm.cagr < 0 ? ' negative' : '');
+  animateNumber(bigEl, sm.cagr * 100, 1200, '+', '%', 1);
+
+  document.getElementById('comparison-line').textContent =
+    `vs S\u00A0&\u00A0P 500: ${pctSigned(bm.cagr)} CAGR \u00B7 Sharpe ${bm.sharpe.toFixed(2)}`;
+
+  // ── Signal pill ──
+  const pillContainer = document.getElementById('signal-pill-container');
+  const regime = sig.overall.replace('RISK-', 'RISK-');
+  let pillClass = 'partial';
+  let pillText = 'PARTIAL EXPOSURE';
+  if (regime === 'RISK-ON') { pillClass = 'risk-on'; pillText = 'RISK-ON'; }
+  else if (regime === 'RISK-OFF') { pillClass = 'risk-off'; pillText = 'RISK-OFF'; }
+  pillContainer.innerHTML = `<span class="signal-pill ${pillClass}">${pillText}</span>`;
+  document.getElementById('signal-date').textContent = `As of ${sig.date}`;
+
+  // ── Signal table ──
+  const comps = sig.components;
+  const rows = [
+    ['12-1 Month Momentum', comps.momentum.signal],
+    ['200-Day MA Filter', comps.ma200.signal],
+    ['VIX Regime', comps.vix.signal],
+    ['Yield Curve', comps.yield_curve.signal],
+  ];
+  document.getElementById('signal-table').innerHTML = rows.map(([name, on]) =>
+    `<div class="signal-row">
+      <span class="signal-name">${name}</span>
+      <span class="signal-status ${on ? 'on' : 'off'}">${on ? '\u2713 ON' : '\u2717 OFF'}</span>
+    </div>`
+  ).join('');
+
+  const scoreLabels = { 4: 'Full risk-on', 3: 'Full risk-on', 2: 'Partial exposure', 1: 'Risk-off', 0: 'Risk-off' };
+  document.getElementById('signal-score').textContent =
+    `Score: ${sig.score}/4 \u2192 ${scoreLabels[sig.score]}`;
+
+  // ── Stat boxes ──
+  document.getElementById('stat-boxes').innerHTML = [
+    ['Sharpe Ratio', sm.sharpe.toFixed(2)],
+    ['Max Drawdown', pctSigned(sm.max_drawdown)],
+    ['In Market', pct(sm.pct_time_risk_on) + '%'],
+  ].map(([label, val]) =>
+    `<div class="stat-box">
+      <div class="stat-box-label">${label}</div>
+      <div class="stat-box-value">${val}</div>
+    </div>`
+  ).join('');
+
+  // ── CHARTS ──
+  renderRegimeChart(data);
+  renderCovidChart(data);
+  renderPermutationChart(data);
+  renderGrossNetChart(data);
+  renderEquityChart(data);
+  renderRollingSharpeChart(data);
+  renderDrawdownChart(data);
+  renderGrowthChart(data);
+
+  // ── Education insights ──
+  const edu = data.educational_stats || {};
+  const covidCash = edu.covid_pct_in_cash_feb_apr_2020;
+  document.getElementById('insight-regime').textContent = covidCash != null
+    ? `During the 2020 COVID crash (Feb\u2013Apr), AMCE was in cash (safe assets) ${covidCash}% of the time on average \u2014 having shifted toward risk-off when VIX crossed 25 and the 200-day MA was violated.`
+    : 'During the 2020 COVID crash, AMCE rotated toward safety when VIX crossed 25 and the 200-day MA was violated.';
+
+  const nm = perm.null_mean != null ? perm.null_mean : (perm.null_distribution.reduce((a, b) => a + b, 0) / perm.null_distribution.length);
+  const ns = perm.null_std != null ? perm.null_std : 0;
+  document.getElementById('insight-overfit').textContent =
+    `If our signals had no predictive power, we would expect a Sharpe ratio of ${nm.toFixed(2)} \u00B1 ${ns.toFixed(2)} based on random chance alone. AMCE achieved ${sm.sharpe.toFixed(2)}, which has a ${(perm.p_value * 100).toFixed(1)}% probability of occurring by luck (p = ${perm.p_value.toFixed(4)}).`;
+
+  const topP = perm.top_percent != null ? perm.top_percent : (100 - (perm.percentile || 0));
+  document.getElementById('perm-caption').textContent =
+    `Our strategy is in the top ${topP.toFixed(1)}% of all ${perm.null_distribution.length.toLocaleString()} random (shuffled-signal) strategies by Sharpe ratio.`;
+
+  document.getElementById('insight-peer').textContent =
+    `AMCE's out-of-sample Sharpe of ${sm.sharpe.toFixed(2)} places it in the range of institutional-grade systematic strategies, achieved with four rules and no optimization.`;
+
+  document.getElementById('insight-cost').textContent =
+    `AMCE averages ${costs.trades_per_year.toFixed(1)} round-trips per year \u2014 compared to day-traders who may execute hundreds. This keeps annual transaction costs below ${costs.annual_drag_bps.toFixed(0)} basis points.`;
+
+  document.getElementById('turnover-lines').innerHTML = `
+    Average trades per year: <span>${costs.trades_per_year.toFixed(1)}</span><br>
+    Cost per trade: <span>5 basis points (0.05%)</span><br>
+    Annual cost drag: <span>${costs.annual_drag_bps.toFixed(0)} bps</span><br>
+    CAGR before costs: <span>${pctSigned(costs.gross_cagr)}</span><br>
+    CAGR after costs: <span>${pctSigned(costs.net_cagr)}</span>
+  `;
+
+  // ── Comparison table ──
+  document.getElementById('comp-table').innerHTML = `
+    <div class="comp-cell header">Strategy</div>
+    <div class="comp-cell header">CAGR</div>
+    <div class="comp-cell header">Sharpe</div>
+    <div class="comp-cell header">Max DD</div>
+    <div class="comp-cell highlight">AMCE (OOS)</div>
+    <div class="comp-cell highlight">${pctSigned(sm.cagr)}</div>
+    <div class="comp-cell highlight">${sm.sharpe.toFixed(2)}</div>
+    <div class="comp-cell highlight">${pctSigned(sm.max_drawdown)}</div>
+    <div class="comp-cell">S&amp;P 500 (Buy &amp; Hold)</div>
+    <div class="comp-cell">${pctSigned(bm.cagr)}</div>
+    <div class="comp-cell">${bm.sharpe.toFixed(2)}</div>
+    <div class="comp-cell">${pctSigned(bm.max_drawdown)}</div>
+    <div class="comp-cell">60/40 Portfolio</div>
+    <div class="comp-cell">${pctSigned(bm6040.cagr)}</div>
+    <div class="comp-cell">${bm6040.sharpe.toFixed(2)}</div>
+    <div class="comp-cell">${pctSigned(bm6040.max_drawdown)}</div>
+    <div class="comp-cell">Risk-free (T-bills)</div>
+    <div class="comp-cell">+2.1%</div>
+    <div class="comp-cell">\u2014</div>
+    <div class="comp-cell">0%</div>
+  `;
+
+  // ── Tearsheet subhead ──
+  document.getElementById('tearsheet-subhead').textContent =
+    `OUT-OF-SAMPLE \u00B7 ${data.oos_start.slice(0,4)}\u2013${data.oos_end.slice(0,4)} \u00B7 AFTER 5BPS COSTS`;
+
+  // ── Metric strip ──
+  document.getElementById('metric-strip').innerHTML = [
+    ['CAGR', pctSigned(sm.cagr)],
+    ['Sharpe', sm.sharpe.toFixed(2)],
+    ['Sortino', sm.sortino.toFixed(2)],
+    ['Max DD', pctSigned(sm.max_drawdown)],
+    ['% In Mkt', pct(sm.pct_time_risk_on) + '%'],
+    ['Trades/Yr', sm.trades_per_year.toFixed(0)],
+  ].map(([label, val]) =>
+    `<div class="metric-box">
+      <div class="metric-box-label">${label}</div>
+      <div class="metric-box-value">${val}</div>
+    </div>`
+  ).join('');
+
+  // ── Growth summary boxes ──
+  const adv = wealth.advantage;
+  document.getElementById('summary-boxes').innerHTML = `
+    <div class="summary-box highlight">
+      <div class="summary-box-label">AMCE Final Value</div>
+      <div class="summary-box-value">$${Math.round(wealth.amce_final).toLocaleString()}</div>
+    </div>
+    <div class="summary-box">
+      <div class="summary-box-label">S&amp;P 500 Final Value</div>
+      <div class="summary-box-value">$${Math.round(wealth.spy_final).toLocaleString()}</div>
+    </div>
+    <div class="summary-box">
+      <div class="summary-box-label">AMCE vs S&amp;P 500</div>
+      <div class="summary-box-value ${adv >= 0 ? 'positive' : 'negative'}">
+        ${adv >= 0 ? '+' : ''}$${Math.round(Math.abs(adv)).toLocaleString()}
+      </div>
+    </div>
+  `;
+
+  // ── Live signal section ──
+  renderLiveSignal(data);
+
+  // ── Scroll to results ──
+  document.getElementById('section-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ═══════════════════════════════════════
+   CHART RENDERERS
+   ═══════════════════════════════════════ */
+
+function sampleData(records, maxPoints = 500) {
+  if (records.length <= maxPoints) return records;
+  const step = Math.ceil(records.length / maxPoints);
+  return records.filter((_, i) => i % step === 0);
+}
+
+function buildRegimeAnnotations(regimes) {
+  return regimes.map(r => ({
+    type: 'box',
+    xMin: r.start,
+    xMax: r.end,
+    backgroundColor: r.regime === 'risk-on' ? COLORS.tealAlpha :
+                     r.regime === 'risk-off' ? COLORS.redAlpha : 'rgba(107,114,128,0.04)',
+    borderWidth: 0,
+  }));
+}
+
+function renderRegimeChart(data) {
+  const ec = sampleData(data.equity_curve);
+  const ctx = document.getElementById('chart-regime').getContext('2d');
+  charts.regime = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ec.map(r => r.date),
+      datasets: [
+        { label: 'AMCE', data: ec.map(r => r.amce), borderColor: COLORS.teal, borderWidth: 2, tension: 0.1 },
+        { label: 'SPY', data: ec.map(r => r.spy), borderColor: COLORS.inkFaint, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false, drawBorder: false }, ticks: { maxTicksLimit: 6, maxRotation: 0 } },
+        y: { position: 'right', grid: { display: false }, border: { display: false } },
+      },
+      plugins: {
+        tooltip: customTooltip,
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 16 } },
+        annotation: { annotations: buildRegimeAnnotations(data.regimes) },
+      },
+    },
+  });
+}
+
+function renderCovidChart(data) {
+  const ec = data.equity_curve.filter(r => r.date >= '2020-01-01' && r.date <= '2020-06-30');
+  if (ec.length === 0) return;
+  const covidRegimes = data.regimes.filter(r => r.start <= '2020-06-30' && r.end >= '2020-01-01');
+
+  const ctx = document.getElementById('chart-covid').getContext('2d');
+  charts.covid = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ec.map(r => r.date),
+      datasets: [
+        { label: 'AMCE', data: ec.map(r => r.amce), borderColor: COLORS.teal, borderWidth: 2, tension: 0.1 },
+        { label: 'SPY', data: ec.map(r => r.spy), borderColor: COLORS.inkFaint, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 6, maxRotation: 0 } },
+        y: { position: 'right', grid: { display: false }, border: { display: false } },
+      },
+      plugins: {
+        tooltip: customTooltip,
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 16 } },
+        annotation: {
+          annotations: {
+            ...Object.fromEntries(covidRegimes.map((r, i) => ['regime' + i, {
+              type: 'box', xMin: r.start, xMax: r.end,
+              backgroundColor: r.regime === 'risk-on' ? COLORS.tealAlpha : r.regime === 'risk-off' ? COLORS.redAlpha : 'rgba(107,114,128,0.04)',
+              borderWidth: 0,
+            }])),
+            vixLabel: {
+              type: 'label', xValue: '2020-02-24', yValue: 'max',
+              content: ['VIX > 25', 'Risk-off signal'],
+              font: { family: "'DM Mono', monospace", size: 9 },
+              color: COLORS.red, backgroundColor: 'rgba(254,242,242,0.9)',
+              padding: 4,
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderPermutationChart(data) {
+  const dist = data.permutation.null_distribution;
+  const strategySharpe = data.permutation.strategy_sharpe;
+  const nullMean = data.permutation.null_mean != null ? data.permutation.null_mean
+    : dist.reduce((a, b) => a + b, 0) / dist.length;
+  const min = Math.min(...dist, strategySharpe, nullMean) - 0.1;
+  const max = Math.max(...dist, strategySharpe, nullMean) + 0.1;
+  const bins = 28;
+  const w = (max - min) / bins;
+  const labels = [];
+  const counts = [];
+  for (let i = 0; i < bins; i++) {
+    const lo = min + i * w;
+    const hi = i === bins - 1 ? lo + w : lo + w;
+    let c = 0;
+    for (const v of dist) {
+      if (v >= lo && (i < bins - 1 ? v < hi : v <= hi)) c++;
+    }
+    labels.push((lo + w / 2).toFixed(2));
+    counts.push(c);
+  }
+
+  function closestLabel(val) {
+    let best = 0;
+    let bestD = Infinity;
+    labels.forEach((lab, i) => {
+      const d = Math.abs(parseFloat(lab) - val);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return labels[best];
+  }
+
+  const ctx = document.getElementById('chart-permutation').getContext('2d');
+  const xAmce = closestLabel(strategySharpe);
+  const xRand = closestLabel(nullMean);
+  charts.permutation = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Random permutations',
+        data: counts,
+        backgroundColor: 'rgba(138,135,128,0.35)',
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { maxRotation: 0, maxTicksLimit: 10, autoSkip: true },
+          title: { display: true, text: 'Sharpe ratio (bin center)', font: { family: "'DM Mono', monospace", size: 10 } },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(26,25,22,0.06)' },
+          border: { display: false },
+          title: { display: true, text: 'Count', font: { family: "'DM Mono', monospace", size: 10 } },
+        },
+      },
+      plugins: {
+        tooltip: customTooltip,
+        legend: { display: false },
+        annotation: {
+          annotations: {
+            amceLine: {
+              type: 'line',
+              xMin: xAmce, xMax: xAmce,
+              yMin: 0, yMax: 'max',
+              borderColor: COLORS.teal, borderWidth: 2.5,
+              label: {
+                display: true, content: 'AMCE ' + strategySharpe.toFixed(2),
+                position: 'start', backgroundColor: 'rgba(247,244,238,0.95)', color: COLORS.teal,
+                borderWidth: 1, borderColor: COLORS.inkFaint,
+                font: { family: "'DM Mono', monospace", size: 10 },
+              },
+            },
+            randLine: {
+              type: 'line',
+              xMin: xRand, xMax: xRand,
+              yMin: 0, yMax: 'max',
+              borderColor: COLORS.red, borderWidth: 1.5, borderDash: [4, 3],
+              label: {
+                display: true, content: 'Random avg',
+                position: 'end', backgroundColor: 'rgba(247,244,238,0.95)', color: COLORS.red,
+                borderWidth: 1, borderColor: COLORS.inkFaint,
+                font: { family: "'DM Mono', monospace", size: 9 },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderGrossNetChart(data) {
+  const ec = sampleData(data.equity_curve);
+  const ctx = document.getElementById('chart-gross-net').getContext('2d');
+  charts.grossNet = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ec.map(r => r.date),
+      datasets: [
+        { label: 'Gross (before costs)', data: ec.map(r => r.gross), borderColor: COLORS.inkLight, borderWidth: 1.5, borderDash: [4,3], tension: 0.1 },
+        { label: 'Net (after 5bps costs)', data: ec.map(r => r.amce), borderColor: COLORS.teal, borderWidth: 2, tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 6, maxRotation: 0 } },
+        y: { position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false } },
+      },
+      plugins: {
+        tooltip: customTooltip,
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 16 } },
+      },
+    },
+  });
+}
+
+function renderEquityChart(data) {
+  const ec = sampleData(data.equity_curve);
+  const ctx = document.getElementById('chart-equity').getContext('2d');
+  charts.equity = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ec.map(r => r.date),
+      datasets: [
+        { label: 'AMCE', data: ec.map(r => r.amce), borderColor: COLORS.teal, borderWidth: 2, tension: 0.1 },
+        { label: 'SPY', data: ec.map(r => r.spy), borderColor: COLORS.inkFaint, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
+        { label: '60/40', data: ec.map(r => r.sixtyforty), borderColor: COLORS.inkLight, borderWidth: 1, borderDash: [2,2], tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 5, maxRotation: 0 } },
+        y: { type: 'logarithmic', position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false },
+             title: { display: true, text: 'Growth of $1 (log)', font: { family: "'DM Mono', monospace", size: 10 } } },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Growth of $1 (log scale)',
+          font: { family: "'DM Mono', monospace", size: 11 },
+          color: '#8a8780',
+          padding: { bottom: 8 },
+        },
+        tooltip: customTooltip,
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } },
+      },
+    },
+  });
+}
+
+function renderRollingSharpeChart(data) {
+  const rs = sampleData(data.rolling_sharpe.filter(r => r.sharpe != null));
+  const ctx = document.getElementById('chart-rolling-sharpe').getContext('2d');
+  charts.rollingSharpe = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: rs.map(r => r.date),
+      datasets: [{
+        label: 'Rolling 12M Sharpe',
+        data: rs.map(r => r.sharpe),
+        borderColor: COLORS.teal, borderWidth: 1.5, tension: 0.1,
+        fill: { target: { value: 0 }, below: COLORS.redFill, above: 'rgba(0,0,0,0)' },
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 5, maxRotation: 0 } },
+        y: { position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false },
+             title: { display: true, text: 'Rolling 12M Sharpe', font: { family: "'DM Mono', monospace", size: 10 } } },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Rolling 12M Sharpe',
+          font: { family: "'DM Mono', monospace", size: 11 },
+          color: '#8a8780',
+          padding: { bottom: 8 },
+        },
+        tooltip: customTooltip,
+        annotation: { annotations: {
+          zero: { type: 'line', yMin: 0, yMax: 0, borderColor: COLORS.inkFaint, borderWidth: 1, borderDash: [4,3] },
+          threshold: { type: 'line', yMin: 0.5, yMax: 0.5, borderColor: 'rgba(15,118,110,0.3)', borderWidth: 1, borderDash: [4,3],
+            label: { display: true, content: 'Institutional', position: 'start', backgroundColor: 'rgba(0,0,0,0)', color: COLORS.inkLight,
+                     font: { family: "'DM Mono', monospace", size: 9 } } },
+        }},
+      },
+    },
+  });
+}
+
+function renderDrawdownChart(data) {
+  const dd = sampleData(data.drawdown.filter(r => r.amce_dd != null));
+  const ctx = document.getElementById('chart-drawdown').getContext('2d');
+  charts.drawdown = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dd.map(r => r.date),
+      datasets: [
+        { label: 'AMCE', data: dd.map(r => (r.amce_dd || 0) * 100), borderColor: COLORS.teal, borderWidth: 1.5,
+          fill: true, backgroundColor: COLORS.tealFill, tension: 0.1 },
+        { label: 'SPY', data: dd.map(r => (r.spy_dd || 0) * 100), borderColor: COLORS.red, borderWidth: 1,
+          borderDash: [4,3], fill: true, backgroundColor: COLORS.redFill, tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 5, maxRotation: 0 } },
+        y: { position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false },
+             title: { display: true, text: 'Drawdown', font: { family: "'DM Mono', monospace", size: 10 } } },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Drawdown',
+          font: { family: "'DM Mono', monospace", size: 11 },
+          color: '#8a8780',
+          padding: { bottom: 8 },
+        },
+        tooltip: customTooltip,
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } },
+      },
+    },
+  });
+}
+
+function renderGrowthChart(data) {
+  const ec = sampleData(data.equity_curve);
+  const ctx = document.getElementById('chart-growth').getContext('2d');
+  charts.growth = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ec.map(r => r.date),
+      datasets: [
+        { label: 'AMCE', data: ec.map(r => (r.amce || 1) * 10000), borderColor: COLORS.teal, borderWidth: 2.5, tension: 0.1,
+          fill: true, backgroundColor: COLORS.tealAlpha },
+        { label: 'SPY', data: ec.map(r => (r.spy || 1) * 10000), borderColor: COLORS.inkMid, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
+        { label: '60/40', data: ec.map(r => (r.sixtyforty || 1) * 10000), borderColor: COLORS.inkFaint, borderWidth: 1, borderDash: [2,2], tension: 0.1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { maxTicksLimit: 8, maxRotation: 0 } },
+        y: { position: 'right', grid: { color: 'rgba(26,25,22,0.04)' }, border: { display: false },
+             ticks: { callback: v => '$' + v.toLocaleString() } },
+      },
+      plugins: {
+        tooltip: { ...customTooltip, callbacks: { label: ctx => ctx.dataset.label + ': $' + Math.round(ctx.parsed.y).toLocaleString() } },
+        legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 16 } },
+      },
+    },
+  });
+}
+
+/* ═══════════════════════════════════════
+   LIVE SIGNAL SECTION
+   ═══════════════════════════════════════ */
+function vixFearLevel(v) {
+  if (v < 20) return 'Low';
+  if (v <= 25) return 'Moderate';
+  return 'High';
+}
+
+function renderLiveSignal(data) {
+  const sig = data.current_signal;
+  const comps = sig.components;
+  const riskAsset = data.risk_asset;
+  const safeAsset = data.safe_asset;
+  const m = comps.momentum;
+  const ma = comps.ma200;
+  const vx = comps.vix;
+  const yc = comps.yield_curve;
+
+  let signalClass = 'partial';
+  let signalText = 'PARTIAL EXPOSURE';
+  let signalExplain = `50% ${riskAsset}, 50% ${safeAsset}. Mixed signals.`;
+  if (sig.overall === 'RISK-ON') {
+    signalClass = 'risk-on'; signalText = 'RISK-ON';
+    signalExplain = sig.score >= 4
+      ? `Hold ${riskAsset}. All four signals favor risk assets.`
+      : `Hold ${riskAsset}. Three or more signals favor risk assets.`;
+  } else if (sig.overall === 'RISK-OFF') {
+    signalClass = 'risk-off'; signalText = 'RISK-OFF';
+    signalExplain = `Hold ${safeAsset}. Market conditions favor safety.`;
+  }
+
+  document.getElementById('live-signal-display').innerHTML = `
+    <div class="live-signal-text ${signalClass}">${signalText}</div>
+    <div class="live-signal-explanation">${signalExplain}</div>
+  `;
+
+  const momPct12 = (m.mom_12m * 100).toFixed(1);
+  const momPct1 = (m.mom_1m * 100).toFixed(1);
+  const netMom = ((m.mom_12m - m.mom_1m) * 100).toFixed(2);
+  const pctAboveMa = ma.value;
+  const spread = yc.spread_bps != null ? yc.spread_bps : Math.round(yc.value * 100);
+
+  const cards = [
+    {
+      header: '12-1 Month Momentum',
+      name: '12-1 Month Momentum',
+      detail: `12-month return: ${momPct12 >= 0 ? '+' : ''}${momPct12}% &nbsp;|&nbsp; 1-month return: ${momPct1 >= 0 ? '+' : ''}${momPct1}%`,
+      reading: `Momentum = ${netMom >= 0 ? '+' : ''}${netMom}% \u2192 ${m.signal ? 'Bullish' : 'Bearish'}`,
+      signal: m.signal,
+      explain: 'Plain English: The asset has returned more over the past year than the past month, indicating sustained upward trend.',
+    },
+    {
+      header: '200-Day Moving Average',
+      name: '200-Day Moving Average',
+      detail: `Current price: $${ma.price} &nbsp;|&nbsp; 200-day MA: $${ma.ma}`,
+      reading: `Price is ${pctAboveMa >= 0 ? '+' : ''}${pctAboveMa}% ${pctAboveMa >= 0 ? 'above' : 'below'} MA \u2192 ${ma.signal ? 'Bullish' : 'Bearish'}`,
+      signal: ma.signal,
+      explain: 'Plain English: Price above the 200-day average signals a long-term uptrend. Below it signals a downtrend.',
+    },
+    {
+      header: 'VIX Regime',
+      name: 'VIX Regime',
+      detail: `VIX: ${vx.value.toFixed(1)} &nbsp;|&nbsp; Threshold: 25`,
+      reading: `Fear level: ${vixFearLevel(vx.value)}`,
+      signal: vx.signal,
+      explain: 'Plain English: VIX measures market fear. Above 25 signals panic \u2014 historically the worst time to be in equities.',
+    },
+    {
+      header: 'Yield Curve',
+      name: 'Yield Curve',
+      detail: `10Y rate: ${(yc.tnx != null ? yc.tnx : 0).toFixed(2)}% &nbsp;|&nbsp; 3M rate: ${(yc.irx != null ? yc.irx : 0).toFixed(2)}%`,
+      reading: `Spread: ${spread >= 0 ? '+' : ''}${spread} bps \u2192 ${yc.signal ? 'Normal' : 'Inverted'}`,
+      signal: yc.signal,
+      explain: 'Plain English: An inverted yield curve (3M > 10Y) has preceded every US recession since 1960.',
+    },
+  ];
+
+  document.getElementById('signal-cards').innerHTML = cards.map((c, i) =>
+    `<div class="signal-card animate-flip" style="animation-delay: ${i * 80}ms;">
+      <div class="signal-card-header">${c.header}</div>
+      <div class="signal-card-name">${c.name}</div>
+      <div class="signal-card-reading" style="font-size:13px;margin-bottom:6px;">${c.detail}</div>
+      <div class="signal-card-reading">${c.reading}</div>
+      <div class="signal-card-status ${c.signal ? 'bullish' : 'bearish'}">${c.signal ? '\u2713 BULLISH' : '\u2717 BEARISH'}</div>
+      <div class="signal-card-explain">${c.explain}</div>
+    </div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
