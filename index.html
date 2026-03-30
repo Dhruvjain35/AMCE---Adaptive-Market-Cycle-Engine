@@ -290,6 +290,411 @@ body.learning-mode .mode-toggle-switch::before {
   display: none;
 }
 
+/* Show / hide by mode */
+.learning-only {
+  display: none;
+}
+body.learning-mode .learning-only {
+  display: block !important;
+}
+body.learning-mode .hotspots.learning-only {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pro-only {
+  display: none !important;
+}
+body.pro-mode .pro-only {
+  display: block !important;
+}
+body.pro-mode .pro-only.pro-disclosure-bar {
+  display: block !important;
+}
+body.pro-mode .learning-only {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════
+   LEARNING LAB (beginner playground)
+   ═══════════════════════════════════════ */
+.learning-lab {
+  border: 1px dashed var(--teal);
+  background: linear-gradient(180deg, rgba(224,242,241,0.35) 0%, var(--paper) 100%);
+  padding: 28px 24px 32px;
+  margin: 24px 0 8px;
+}
+.learning-lab-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.learning-lab h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.learning-lab-intro {
+  font-size: 15px;
+  color: var(--ink-mid);
+  max-width: 640px;
+  margin-bottom: 24px;
+}
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.lab-card {
+  border: 1px solid var(--ink-faint);
+  background: var(--paper);
+  padding: 16px;
+}
+.lab-card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.lab-card p {
+  font-size: 14px;
+  color: var(--ink-mid);
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+
+/* Train metaphor — pure CSS animation */
+.train-scene {
+  position: relative;
+  height: 88px;
+  border-radius: 4px;
+  background: var(--paper-dark);
+  overflow: hidden;
+}
+.train-track {
+  position: absolute;
+  bottom: 22px;
+  left: 8px;
+  right: 8px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--ink-faint) 0 12px, transparent 12px 20px);
+}
+.train-station {
+  position: absolute;
+  bottom: 28px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+}
+.train-station.risk { left: 10%; }
+.train-station.safe { right: 10%; }
+.train-engine {
+  position: absolute;
+  bottom: 30px;
+  left: 10%;
+  width: 36px;
+  height: 20px;
+  background: var(--teal);
+  border-radius: 4px 8px 8px 4px;
+  animation: trainShuttle 6s ease-in-out infinite;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+}
+.train-engine::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 4px;
+  width: 8px;
+  height: 12px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+@keyframes trainShuttle {
+  0%, 100% { left: 10%; }
+  50% { left: calc(90% - 36px); }
+}
+.train-caption {
+  font-size: 13px;
+  color: var(--ink-mid);
+  margin-top: 10px;
+}
+
+/* Compound growth mini-sim */
+.compound-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+.compound-row label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-light);
+}
+.compound-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--teal);
+  min-width: 140px;
+  transition: transform 0.25s ease;
+}
+.compound-value.pop {
+  transform: scale(1.06);
+}
+
+/* Crash dodge mini-game */
+.crash-game-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-mid);
+  min-height: 2.2em;
+  margin: 8px 0;
+}
+.crash-game-flash {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--red);
+  min-height: 1.4em;
+  letter-spacing: 0.02em;
+}
+.crash-game-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.btn-game {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+}
+.btn-game:hover { background: var(--teal); border-color: var(--teal); }
+.btn-game.secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+.btn-game:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Quiz */
+.quiz-q {
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.quiz-opt {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.quiz-opt:hover { border-color: var(--teal); }
+.quiz-opt.correct { border-color: var(--teal); background: var(--teal-light); }
+.quiz-opt.wrong { border-color: var(--red); background: var(--red-light); }
+.quiz-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--teal);
+  margin-top: 10px;
+}
+
+/* Drawdown cliff — SVG stroke animation (Learning Lab) */
+.cliff-scene {
+  position: relative;
+  background: linear-gradient(180deg, rgba(224,242,241,0.25) 0%, var(--paper-dark) 100%);
+  border-radius: 4px;
+  padding: 12px 12px 8px;
+  margin-top: 8px;
+}
+.cliff-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.cliff-path-main {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 420;
+  stroke-dashoffset: 420;
+}
+.cliff-path-bench {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+  opacity: 0.9;
+  stroke-dasharray: 380;
+  stroke-dashoffset: 380;
+}
+.cliff-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  fill: var(--ink-light);
+}
+.cliff-scene.cliff-animating .cliff-path-main {
+  animation: cliffDrawMain 3.2s ease-out forwards;
+}
+.cliff-scene.cliff-animating .cliff-path-bench {
+  animation: cliffDrawBench 3.2s ease-out 0.15s forwards;
+}
+.cliff-scene.cliff-animating .cliff-pulse {
+  animation: cliffPulse 3.2s ease-out forwards;
+}
+@keyframes cliffDrawMain {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes cliffDrawBench {
+  to { stroke-dashoffset: 0; }
+}
+.cliff-pulse {
+  opacity: 0;
+  transform-origin: center;
+}
+@keyframes cliffPulse {
+  0%, 55% { opacity: 0; transform: scale(0.8); }
+  58% { opacity: 0.9; transform: scale(1.15); }
+  65% { opacity: 0; transform: scale(1.4); }
+  100% { opacity: 0; }
+}
+.cliff-replay-row {
+  text-align: center;
+  margin-top: 8px;
+}
+.btn-cliff-replay {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper);
+  color: var(--ink-mid);
+  cursor: pointer;
+}
+.btn-cliff-replay:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* Match-the-signal game */
+.match-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.match-opt {
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.match-opt:hover { border-color: var(--teal); }
+.match-opt.correct { border-color: var(--teal); background: var(--teal-light); }
+.match-opt.wrong { border-color: var(--red); background: var(--red-light); }
+
+/* ═══════════════════════════════════════
+   PRO MODE — institutional chrome
+   ═══════════════════════════════════════ */
+body.pro-mode {
+  background: #f0efec;
+}
+body.pro-mode .masthead-title {
+  letter-spacing: 0.04em;
+}
+body.pro-mode .masthead-badge {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.pro-disclosure-bar {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  border: 1px solid var(--ink-faint);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  background: rgba(26,25,22,0.03);
+  line-height: 1.6;
+}
+.pro-disclosure-bar strong {
+  color: var(--ink);
+}
+body.pro-mode .results-kicker {
+  letter-spacing: 0.22em;
+}
+body.pro-mode .education-header {
+  font-style: normal !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 22px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+body.pro-mode .edu-panel-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+body.pro-mode .metric-strip {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+body.pro-mode .metric-box-label {
+  font-size: 9px;
+}
+body.pro-mode .metric-box-value {
+  font-size: 15px;
+}
+body.pro-mode .comp-table {
+  font-size: 12px;
+}
+body.pro-mode .hero-headline {
+  font-size: 40px;
+  font-style: normal;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: -0.02em;
+}
+body.pro-mode .hero-body {
+  font-size: 15px;
+  max-width: 720px;
+}
+
 /* Interactive learning UI */
 .learn-toolbar {
   display: flex;
@@ -970,6 +1375,16 @@ body.learning-mode .mode-toggle-switch::before {
   font-weight: 500;
 }
 
+.comp-table-pro {
+  border: 1px solid var(--ink);
+  background: rgba(255, 255, 255, 0.65);
+}
+.comp-table-pro .comp-cell.header {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
 /* ═══════════════════════════════════════
    SECTION 5: TEARSHEET
    ═══════════════════════════════════════ */
@@ -1203,14 +1618,95 @@ body.learning-mode .mode-toggle-switch::before {
      ═══════════════════════════════════════ -->
 <div class="container">
   <section class="hero" id="section-strategy">
-    <div class="hero-kicker">Quantitative Finance</div>
-    <h1 class="hero-headline">Can a five-rule system<br>beat the market?</h1>
-    <p class="hero-body">
-      Most retail investors lose to the S&amp;P 500 not because they pick bad
-      stocks &mdash; but because they hold through drawdowns they cannot stomach.
-      Institutional quant desks use systematic rules to decide when to be
-      in the market and when to step back. This is one of them.
+    <div class="learning-only">
+      <div class="hero-kicker">Start here · no experience needed</div>
+      <h1 class="hero-headline">Can a five-rule system<br>beat the market?</h1>
+      <p class="hero-body">
+        Most people don&rsquo;t lose because they picked the wrong stock &mdash; they lose because they sit through crashes they can&rsquo;t emotionally handle.
+        This page is a <em>transparent</em> rules engine: it decides when to ride risk assets and when to hide in bonds, using math you can inspect.
+      </p>
+    </div>
+    <div class="pro-only">
+      <div class="hero-kicker">Systematic tactical asset allocation · OOS evaluation</div>
+      <h1 class="hero-headline">AMCE: rule-based<br>risk-on / risk-off rotation</h1>
+      <p class="hero-body">
+        Five binary macro and technical filters (momentum, MA200, VIX, yield curve, Supertrend) map to discrete exposure in <span class="font-mono">QQQ</span> vs <span class="font-mono">IEF</span>.
+        Weekly rebalance with minimum holding period; 1-day signal lag; 5bps friction. Benchmark: SPY total return. Development 2005&ndash;2015; reported performance OOS from 2016.
+      </p>
+    </div>
+  </section>
+
+  <!-- Learning Lab: interactive playground (Learning Mode only) -->
+  <section class="section learning-only learning-lab" id="section-learning-lab" aria-label="Learning lab">
+    <div class="learning-lab-kicker">Interactive · try this first</div>
+    <h2>Learning Lab</h2>
+    <p class="learning-lab-intro">
+      Tiny simulations, quick quiz, a drawdown animation, and a matching game. None of this changes the real backtest &mdash; it builds intuition so the charts make sense.
     </p>
+    <div class="lab-grid">
+      <div class="lab-card">
+        <div class="lab-card-title">Visual · the drawdown cliff</div>
+        <p>Equity can rise smoothly, then fall off a cliff. Recovery (getting back to the old peak) often takes longer than the drop &mdash; that is what drawdown charts capture.</p>
+        <div class="cliff-scene cliff-animating" id="cliff-scene" aria-hidden="true">
+          <svg class="cliff-svg" viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg">
+            <text class="cliff-label" x="8" y="14">Illustrative equity</text>
+            <!-- Benchmark: gradual drift -->
+            <path class="cliff-path-bench" d="M 8 88 L 52 82 L 96 78 L 140 74 L 184 70 L 228 66 L 252 62" />
+            <!-- Strategy: up then cliff -->
+            <path class="cliff-path-main" d="M 8 88 L 72 38 L 118 22 L 138 24 L 148 92 L 188 78 L 252 70" />
+            <circle class="cliff-pulse" cx="143" cy="24" r="6" fill="none" stroke="var(--red)" stroke-width="2" />
+          </svg>
+          <div class="cliff-replay-row">
+            <button type="button" class="btn-cliff-replay" id="cliff-replay">Replay animation</button>
+          </div>
+        </div>
+        <p class="train-caption">Green line = stylized path with a crash; dashed = calmer path. AMCE aims to reduce cliff depth &mdash; see the drawdown chart after you run analysis.</p>
+      </div>
+      <div class="lab-card">
+        <div class="lab-card-title">Visual · train between stations</div>
+        <p>AMCE is like switching tracks: sometimes you ride the &ldquo;growth&rdquo; train, sometimes you park in the &ldquo;safety&rdquo; station.</p>
+        <div class="train-scene" aria-hidden="true">
+          <div class="train-track"></div>
+          <span class="train-station risk">Risk assets</span>
+          <span class="train-station safe">Safe assets</span>
+          <div class="train-engine"></div>
+        </div>
+        <p class="train-caption">The real model doesn&rsquo;t move on a timer &mdash; it moves when <strong>five signals</strong> vote. This animation is only a metaphor.</p>
+      </div>
+      <div class="lab-card">
+        <div class="lab-card-title">Mini-sim · compound growth</div>
+        <p>Slide the knobs. Watch how time and return rate change wealth from a $10,000 start (illustration only).</p>
+        <div class="compound-row">
+          <label>Years <input type="range" id="compound-years" min="1" max="40" value="15" style="vertical-align:middle;width:120px;"></label>
+          <span class="font-mono" id="compound-years-lbl">15</span>
+        </div>
+        <div class="compound-row">
+          <label>Yearly return % <input type="range" id="compound-rate" min="-5" max="20" value="8" step="0.5" style="vertical-align:middle;width:120px;"></label>
+          <span class="font-mono" id="compound-rate-lbl">8%</span>
+        </div>
+        <div class="compound-value" id="compound-out">$31,722</div>
+      </div>
+      <div class="lab-card">
+        <div class="lab-card-title">Mini-game · dodge the crash</div>
+        <p>When <span class="font-mono">CRASH!</span> flashes, tap <strong>Move to bonds</strong> within a beat. Three rounds. (Reaction-time fun, not a forecast.)</p>
+        <div class="crash-game-flash" id="crash-flash"></div>
+        <div class="crash-game-status" id="crash-status">Press Start, stay ready.</div>
+        <div class="crash-game-btns">
+          <button type="button" class="btn-game" id="crash-start">Start</button>
+          <button type="button" class="btn-game secondary" id="crash-dodge" disabled>Move to bonds</button>
+        </div>
+        <div class="crash-game-status" id="crash-score">Score: 0 / 3</div>
+      </div>
+      <div class="lab-card" id="quiz-card">
+        <div class="lab-card-title">Quiz · 5 quick checks</div>
+        <div id="quiz-host"></div>
+      </div>
+      <div class="lab-card" id="match-game-card">
+        <div class="lab-card-title">Mini-game · match signal to job</div>
+        <p>Each AMCE rule answers one question. Pick which rule fits the clue (5 rounds).</p>
+        <div id="match-host"></div>
+      </div>
+    </div>
   </section>
 
   <hr class="section-divider">
@@ -1269,12 +1765,18 @@ body.learning-mode .mode-toggle-switch::before {
        ═══════════════════════════════════════ -->
   <div id="results-container">
 
+    <div class="pro-only pro-disclosure-bar" id="pro-disclosure-bar">
+      <strong>Risk &amp; methodology.</strong> Educational simulation only &mdash; not investment advice, not an offer, not a fiduciary product.
+      Performance is hypothetical OOS from user-selected window; past performance ≠ future results. Model risk, data snooping, and regime change apply.
+      Compare to SPY total return &amp; 60/40; costs modeled at 5bps per trade.
+    </div>
+
     <hr class="section-divider">
 
     <!-- SECTION 3: THE VERDICT -->
     <section class="section results-stagger s1" id="section-verdict">
       <div class="results-kicker" id="results-kicker"></div>
-      <div class="hotspots" id="hotspots-verdict">
+      <div class="hotspots learning-only" id="hotspots-verdict">
         <button class="hotspot-btn" onclick="openLearn('verdict')">What is the verdict?</button>
         <button class="hotspot-btn" onclick="openLearn('regimes')">What is a regime?</button>
       </div>
@@ -1307,8 +1809,8 @@ body.learning-mode .mode-toggle-switch::before {
 
     <!-- SECTION 4: EDUCATION -->
     <section class="section results-stagger s2" id="section-education">
-      <h2 class="font-headline-italic education-header" style="font-size: 36px;">Understanding the Results</h2>
-      <p class="education-subhead">Each concept below is explained using your actual results &mdash; not textbook examples.</p>
+      <h2 class="font-headline-italic education-header" id="education-main-title" style="font-size: 36px;">Understanding the Results</h2>
+      <p class="education-subhead" id="education-subhead">Each concept below is explained using your actual results &mdash; not textbook examples.</p>
 
       <!-- Panel 1: Regimes -->
       <div class="edu-panel animate-fade-up" style="animation-delay: 0ms;">
@@ -1396,14 +1898,14 @@ body.learning-mode .mode-toggle-switch::before {
     <hr class="section-divider">
 
     <!-- Learning Mode ELI5 helper (shown when Learning Mode is on) -->
-    <div class="eli5-alert hidden" id="eli5-tearsheet">
+    <div class="eli5-alert learning-only hidden" id="eli5-tearsheet">
       <strong>ELI5 · What am I looking at?</strong>
       <span>💡 What am I looking at? Institutional investors don't just 'buy and hold'—they use math to step away from the market when risk is high. This tearsheet proves that avoiding major crashes (Max Drawdown) is the secret to growing wealth over time.</span>
     </div>
 
     <!-- SECTION 5: TEARSHEET -->
     <section class="section results-stagger s3" id="section-methodology">
-      <h2 class="font-headline-italic" style="font-size: 36px;">Performance Tearsheet</h2>
+      <h2 class="font-headline-italic" id="tearsheet-section-title" style="font-size: 36px;">Performance Tearsheet</h2>
       <div class="tearsheet-subhead" id="tearsheet-subhead"></div>
 
       <div class="three-col">
@@ -1425,7 +1927,7 @@ body.learning-mode .mode-toggle-switch::before {
 
     <!-- SECTION 6: GROWTH OF $10K -->
     <section class="section results-stagger s4" id="section-growth">
-      <h2 class="font-headline-italic" style="font-size: 32px;">Growth of $10,000</h2>
+      <h2 class="font-headline-italic" id="growth-section-title" style="font-size: 32px;">Growth of $10,000</h2>
       <div class="learn-toolbar" id="crash-toolbar">
         <button class="pill-btn active" data-window="all" onclick="setCrashWindow('all')">Normal</button>
         <button class="pill-btn" data-window="dotcom" onclick="setCrashWindow('dotcom')">Dot-com 2000</button>
@@ -1466,7 +1968,7 @@ body.learning-mode .mode-toggle-switch::before {
 
     <!-- FOOTER -->
     <footer class="footer">
-      <div class="footer-methodology">
+      <div class="footer-methodology" id="footer-methodology">
         <strong>Methodology note.</strong> Strategy signals are computed using end-of-week close prices
         with a one-day execution lag. All performance figures are after 5 basis points transaction costs
         per trade. No parameters were optimised in-sample &mdash; every threshold is derived from
@@ -1552,12 +2054,14 @@ const AMCE_STATE = {
   function applyMode() {
     if (AMCE_STATE.learningMode) {
       body.classList.add('learning-mode');
+      body.classList.remove('pro-mode');
       if (eli5Box) eli5Box.classList.remove('hidden');
       if (labelPro) labelPro.classList.remove('active');
       if (labelLearning) labelLearning.classList.add('active');
       if (toggle && !toggle.checked) toggle.checked = true;
     } else {
       body.classList.remove('learning-mode');
+      body.classList.add('pro-mode');
       if (eli5Box) eli5Box.classList.add('hidden');
       if (labelPro) labelPro.classList.add('active');
       if (labelLearning) labelLearning.classList.remove('active');
@@ -1571,7 +2075,9 @@ const AMCE_STATE = {
     toggle.addEventListener('change', () => {
       AMCE_STATE.learningMode = !!toggle.checked;
       applyMode();
-      if (AMCE_STATE.lastData) renderLiveSignal(AMCE_STATE.lastData);
+      if (AMCE_STATE.lastData) {
+        renderResults(AMCE_STATE.lastData, { skipScroll: true });
+      }
     });
   }
 
@@ -1706,7 +2212,7 @@ async function runAnalysis() {
 /* ═══════════════════════════════════════
    RENDER ALL RESULTS
    ═══════════════════════════════════════ */
-function renderResults(data) {
+function renderResults(data, opts = {}) {
   destroyCharts();
   AMCE_STATE.lastData = data;
 
@@ -1730,18 +2236,58 @@ function renderResults(data) {
   const costs = data.costs;
   const riskAsset = data.risk_asset;
   const safeAsset = data.safe_asset;
+  const learn = !!AMCE_STATE.learningMode;
+
+  // ── Section chrome (Learning vs Pro) ──
+  const eduTitle = document.getElementById('education-main-title');
+  if (eduTitle) {
+    eduTitle.textContent = learn
+      ? 'Understanding the Results'
+      : 'OOS attribution & diagnostics';
+  }
+  const eduSub = document.getElementById('education-subhead');
+  if (eduSub) {
+    eduSub.textContent = learn
+      ? 'Each concept below is explained using your actual results — not textbook examples.'
+      : 'Benchmark-relative metrics · SPY total return · 60/40 = 60% SPY / 40% IEF · 5bps/trade · rules not tuned in-sample.';
+  }
+  const tsTitle = document.getElementById('tearsheet-section-title');
+  if (tsTitle) {
+    tsTitle.textContent = learn ? 'Performance Tearsheet' : 'OOS tearsheet · log equity';
+  }
+  const grTitle = document.getElementById('growth-section-title');
+  if (grTitle) {
+    grTitle.textContent = learn ? 'Growth of $10,000' : 'Capital growth · $10,000 base';
+  }
+  const foot = document.getElementById('footer-methodology');
+  if (foot) {
+    foot.innerHTML = learn
+      ? `<strong>Methodology note.</strong> Strategy signals are computed using end-of-week close prices
+        with a one-day execution lag. All performance figures are after 5 basis points transaction costs
+        per trade. No parameters were optimised in-sample — every threshold is derived from
+        published academic research or established market structure.
+        Walk-forward validation: 2005–2015 development period, 2016–present
+        out-of-sample. Benchmark is SPY total return (auto-adjusted).
+        Data source: Yahoo Finance. This is an educational tool, not investment advice.`
+      : `<strong>Disclaimer.</strong> For professional / educational use only. Not an offer, solicitation, or personalized advice.
+        Hypothetical OOS performance; survivorship, liquidity, and implementation shortfall not modeled.
+        Signals: EOD with 1-day execution lag; weekly rebalance; min. holding filter. Costs: 5bps per turnover side as specified.
+        Development window 2005–2015; reported metrics OOS from 2016 per API. Data: Yahoo Finance (adjusted). Past performance ≠ future results.`;
+  }
 
   // ── Verdict kicker ──
-  document.getElementById('results-kicker').textContent =
-    `OUT-OF-SAMPLE RESULTS \u00B7 ${data.oos_start.slice(0,4)}\u2013${data.oos_end.slice(0,4)}`;
+  document.getElementById('results-kicker').textContent = learn
+    ? `OUT-OF-SAMPLE RESULTS · ${data.oos_start.slice(0,4)}–${data.oos_end.slice(0,4)}`
+    : `OOS · ${data.oos_start} → ${data.oos_end} · ${riskAsset}/${safeAsset} · SPY benchmark`;
 
   // ── Big CAGR number ──
   const bigEl = document.getElementById('big-cagr');
   bigEl.className = 'big-number' + (sm.cagr < 0 ? ' negative' : '');
   animateNumber(bigEl, sm.cagr * 100, 1200, '+', '%', 1);
 
-  document.getElementById('comparison-line').textContent =
-    `vs S\u00A0&\u00A0P 500: ${pctSigned(bm.cagr)} CAGR \u00B7 Sharpe ${bm.sharpe.toFixed(2)}`;
+  document.getElementById('comparison-line').textContent = learn
+    ? `vs S\u00A0&\u00A0P 500: ${pctSigned(bm.cagr)} CAGR \u00B7 Sharpe ${bm.sharpe.toFixed(2)}`
+    : `SPY OOS: ${pctSigned(bm.cagr)} CAGR · ${bm.sharpe.toFixed(2)} Sharpe · excess CAGR vs SPY ${pctSigned(sm.cagr - bm.cagr)}`;
 
   // ── Signal pill ──
   const pillContainer = document.getElementById('signal-pill-container');
@@ -1798,24 +2344,35 @@ function renderResults(data) {
   // ── Education insights ──
   const edu = data.educational_stats || {};
   const covidCash = edu.covid_pct_in_cash_feb_apr_2020;
-  document.getElementById('insight-regime').textContent = covidCash != null
-    ? `During the 2020 COVID crash (Feb\u2013Apr), AMCE was in cash (safe assets) ${covidCash}% of the time on average \u2014 having shifted toward risk-off when VIX crossed 25 and the 200-day MA was violated.`
-    : 'During the 2020 COVID crash, AMCE rotated toward safety when VIX crossed 25 and the 200-day MA was violated.';
+  document.getElementById('insight-regime').textContent = learn
+    ? (covidCash != null
+      ? `During the 2020 COVID crash (Feb\u2013Apr), AMCE was in cash (safe assets) ${covidCash}% of the time on average \u2014 having shifted toward risk-off when VIX crossed 25 and the 200-day MA was violated.`
+      : 'During the 2020 COVID crash, AMCE rotated toward safety when VIX crossed 25 and the 200-day MA was violated.')
+    : (covidCash != null
+      ? `COVID shock (Feb\u2013Apr 2020): average allocation to safe assets ${covidCash}% of days · regime filter engaged on stress signals.`
+      : 'Stress window 2020: model elevated defensive posture consistent with VIX/MA filters.');
 
   const nm = perm.null_mean != null ? perm.null_mean : (perm.null_distribution.reduce((a, b) => a + b, 0) / perm.null_distribution.length);
   const ns = perm.null_std != null ? perm.null_std : 0;
-  document.getElementById('insight-overfit').textContent =
-    `If our signals had no predictive power, we would expect a Sharpe ratio of ${nm.toFixed(2)} \u00B1 ${ns.toFixed(2)} based on random chance alone. AMCE achieved ${sm.sharpe.toFixed(2)}, which has a ${(perm.p_value * 100).toFixed(1)}% probability of occurring by luck (p = ${perm.p_value.toFixed(4)}).`;
-
   const topP = perm.top_percent != null ? perm.top_percent : (100 - (perm.percentile || 0));
-  document.getElementById('perm-caption').textContent =
-    `Our strategy is in the top ${topP.toFixed(1)}% of all ${perm.null_distribution.length.toLocaleString()} random (shuffled-signal) strategies by Sharpe ratio.`;
+  const hacP = perm.hac_mean_return_p_value != null ? perm.hac_mean_return_p_value : perm.p_value;
+  const shuffleP = perm.timing_shuffle_p_value != null ? perm.timing_shuffle_p_value : perm.p_value;
+  const nShuffles = perm.null_distribution.length;
+  document.getElementById('insight-overfit').textContent = learn
+    ? `Two different statistical questions: (1) Newey–West (HAC) p-value asks whether the average OOS daily return is positive after allowing for autocorrelation in returns (H0: mean ≤ 0). Here p = ${hacP.toFixed(4)}. (2) Weekly timing shuffle: we re-randomize the same weekly exposure blocks; the null Sharpe distribution is ${nm.toFixed(2)} ± ${ns.toFixed(2)}. AMCE Sharpe ${sm.sharpe.toFixed(2)} ranks in the top ${topP.toFixed(1)}% of ${nShuffles.toLocaleString()} shuffles; shuffle p = ${shuffleP.toFixed(4)}.`
+    : `OOS significance: HAC p (mean daily return > 0, Newey–West) = ${hacP.toFixed(4)}. Timing shuffle vs null Sharpe (μ ${nm.toFixed(2)}, σ ${ns.toFixed(2)}): p = ${shuffleP.toFixed(4)}; AMCE Sharpe ${sm.sharpe.toFixed(2)} (top ${topP.toFixed(1)}% of ${nShuffles.toLocaleString()} shuffles).`;
 
-  document.getElementById('insight-peer').textContent =
-    `AMCE's out-of-sample Sharpe of ${sm.sharpe.toFixed(2)} places it in the range of institutional-grade systematic strategies, achieved with five rules and no optimization.`;
+  document.getElementById('perm-caption').textContent = learn
+    ? `Histogram: Sharpe from ${nShuffles.toLocaleString()} random orderings of the same weekly exposure blocks. Headline p is the HAC mean-return test; shuffle p is the Sharpe tail vs this null.`
+    : `Top ${topP.toFixed(1)}% of ${nShuffles.toLocaleString()} random weekly timing paths by Sharpe (shuffle p = ${shuffleP.toFixed(4)}).`;
 
-  document.getElementById('insight-cost').textContent =
-    `AMCE averages ${costs.trades_per_year.toFixed(1)} round-trips per year \u2014 compared to day-traders who may execute hundreds. This keeps annual transaction costs below ${costs.annual_drag_bps.toFixed(0)} basis points.`;
+  document.getElementById('insight-peer').textContent = learn
+    ? `Think of Sharpe as &ldquo;return per unit of bumpiness.&rdquo; AMCE&rsquo;s OOS Sharpe of ${sm.sharpe.toFixed(2)} is the headline risk-adjusted number institutions track — produced here with five transparent rules and no backtest tuning.`
+    : `OOS Sharpe ${sm.sharpe.toFixed(2)} (rule-based, non-optimized). HAC ${hacP.toFixed(4)} on mean return; timing-shuffle p ${shuffleP.toFixed(4)} vs weekly block null.`;
+
+  document.getElementById('insight-cost').textContent = learn
+    ? `AMCE averages ${costs.trades_per_year.toFixed(1)} round-trips per year \u2014 compared to day-traders who may execute hundreds. This keeps annual transaction costs below ${costs.annual_drag_bps.toFixed(0)} basis points.`
+    : `Turnover: ~${costs.trades_per_year.toFixed(1)} trades/year implied · modeled cost ${costs.annual_drag_bps.toFixed(0)} bps drag vs gross · low-frequency implementation.`;
 
   document.getElementById('turnover-lines').innerHTML = `
     Average trades per year: <span>${costs.trades_per_year.toFixed(1)}</span><br>
@@ -1826,7 +2383,9 @@ function renderResults(data) {
   `;
 
   // ── Comparison table ──
-  document.getElementById('comp-table').innerHTML = `
+  const compEl = document.getElementById('comp-table');
+  compEl.className = 'comp-table' + (learn ? '' : ' comp-table-pro');
+  compEl.innerHTML = `
     <div class="comp-cell header">Strategy</div>
     <div class="comp-cell header">CAGR</div>
     <div class="comp-cell header">Sharpe</div>
@@ -1850,29 +2409,43 @@ function renderResults(data) {
   `;
 
   // ── Tearsheet subhead ──
-  document.getElementById('tearsheet-subhead').textContent =
-    `OUT-OF-SAMPLE \u00B7 ${data.oos_start.slice(0,4)}\u2013${data.oos_end.slice(0,4)} \u00B7 AFTER 5BPS COSTS`;
+  document.getElementById('tearsheet-subhead').textContent = learn
+    ? `OUT-OF-SAMPLE \u00B7 ${data.oos_start.slice(0,4)}\u2013${data.oos_end.slice(0,4)} \u00B7 AFTER 5BPS COSTS`
+    : `OOS window ${data.oos_start} \u2192 ${data.oos_end} · net of 5bps/side · ${riskAsset}/${safeAsset}`;
 
-  // ── Metric strip ──
-  document.getElementById('metric-strip').innerHTML = [
+  const annVol = sm.annual_volatility != null ? sm.annual_volatility : null;
+  const stripRows = [
     ['CAGR', pctSigned(sm.cagr)],
     ['Sharpe', sm.sharpe.toFixed(2)],
     ['Sortino', sm.sortino.toFixed(2)],
     ['Max DD', pctSigned(sm.max_drawdown)],
     ['% In Mkt', pct(sm.pct_time_risk_on) + '%'],
     ['Trades/Yr', sm.trades_per_year.toFixed(0)],
-  ].map(([label, val]) =>
+  ];
+  if (!learn && annVol != null) {
+    stripRows.push(['Ann vol', (annVol * 100).toFixed(1) + '%']);
+    stripRows.push(['HAC p', hacP.toFixed(4)]);
+    stripRows.push(['Shuf p', shuffleP.toFixed(4)]);
+  }
+
+  // ── Metric strip ──
+  document.getElementById('metric-strip').innerHTML = stripRows.map(([label, val]) =>
     `<div class="metric-box">
       <div class="metric-box-label">${label}</div>
       <div class="metric-box-value">${val}</div>
     </div>`
   ).join('');
 
-  // Every metric becomes a learnable element
   document.querySelectorAll('#metric-strip .metric-box').forEach((box) => {
-    box.style.cursor = 'pointer';
-    box.onclick = () => openLearn('metrics');
-    box.title = 'Click to learn these metrics';
+    if (learn) {
+      box.style.cursor = 'pointer';
+      box.onclick = () => openLearn('metrics');
+      box.title = 'Click to learn these metrics';
+    } else {
+      box.style.cursor = 'default';
+      box.onclick = null;
+      box.removeAttribute('title');
+    }
   });
 
   // ── Growth summary boxes ──
@@ -1900,8 +2473,9 @@ function renderResults(data) {
 
   bindLearnSurfaces();
 
-  // ── Scroll to results ──
-  document.getElementById('section-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!opts.skipScroll) {
+    document.getElementById('section-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 /* ═══════════════════════════════════════
@@ -1947,11 +2521,11 @@ const LEARN_CONTENT = {
     showSandbox: true,
   },
   permutation: {
-    title: "Permutation test (is it luck?)",
+    title: "Statistical tests (HAC vs timing shuffle)",
     body: `
-      <p>This chart asks: <em>&ldquo;If we scrambled the strategy&rsquo;s weekly decisions at random, how often would we get a Sharpe this high?&rdquo;</em></p>
-      <p>The answer is the <span class="mono">p-value</span>. Smaller means stronger evidence the result isn&rsquo;t just chance.</p>
-      <p>We don&rsquo;t fake this number. If p is higher, it means the current rules look less statistically unusual versus randomized timing.</p>
+      <p><strong>Headline p (HAC):</strong> Newey–West heteroskedasticity- and autocorrelation-consistent test on the OOS <em>mean daily return</em> (one-sided vs zero). Daily returns are not i.i.d.; HAC fixes the standard error so we don&rsquo;t overstate significance.</p>
+      <p><strong>Shuffle p (this histogram):</strong> We keep the same weekly exposure <em>levels</em> but randomly re-order them across time, then recompute Sharpe. That tests &ldquo;timing luck&rdquo; vs a block-shuffle null — a different question than HAC.</p>
+      <p>Good research reports both: economic significance (Sharpe) and multiple statistical lenses. Neither number is &ldquo;made up&rdquo;; they answer different hypotheses.</p>
     `,
     showSandbox: false,
   },
@@ -2642,6 +3216,16 @@ function renderLiveSignal(data) {
     signalExplain = `Hold ${safeAsset}. Market conditions favor safety.`;
   }
 
+  if (!learning) {
+    if (sig.overall === 'RISK-ON') {
+      signalExplain = `Full ${riskAsset} sleeve · score ${sig.score}/5 · majority rules satisfied.`;
+    } else if (sig.overall === 'RISK-OFF') {
+      signalExplain = `Defensive allocation ${safeAsset} · score ${sig.score}/5.`;
+    } else {
+      signalExplain = `50/50 ${riskAsset}/${safeAsset} · partial consensus · score ${sig.score}/5.`;
+    }
+  }
+
   document.getElementById('live-signal-display').innerHTML = `
     <div class="live-signal-text ${signalClass}">${signalText}</div>
     <div class="live-signal-explanation">${signalExplain}</div>
@@ -2670,7 +3254,7 @@ function renderLiveSignal(data) {
       signal: m.signal,
       explain: learning
         ? `Analogy: ${ANALOGIES.momentum}`
-        : 'Plain English: The asset has returned more over the past year than the past month, indicating sustained upward trend.',
+        : '12-1 return spread: intermediate momentum gate; binary vote toward risk-on when positive.',
     },
     {
       header: '200-Day Moving Average',
@@ -2680,7 +3264,7 @@ function renderLiveSignal(data) {
       signal: ma.signal,
       explain: learning
         ? `Analogy: ${ANALOGIES.ma200}`
-        : 'Plain English: Price above the 200-day average signals a long-term uptrend. Below it signals a downtrend.',
+        : '200-day MA filter: structural trend regime; reduces exposure when price &lt; long-run mean.',
     },
     {
       header: 'VIX Regime',
@@ -2690,7 +3274,7 @@ function renderLiveSignal(data) {
       signal: vx.signal,
       explain: learning
         ? `Analogy: ${ANALOGIES.vix}`
-        : 'Plain English: VIX measures market fear. Above 25 signals panic \u2014 historically the worst time to be in equities.',
+        : 'VIX regime: implied vol stress filter; threshold 25 as risk-off trigger.',
     },
     {
       header: 'Yield Curve',
@@ -2700,7 +3284,7 @@ function renderLiveSignal(data) {
       signal: yc.signal,
       explain: learning
         ? `Analogy: ${ANALOGIES.yield}`
-        : 'Plain English: An inverted yield curve (3M > 10Y) has preceded every US recession since 1960.',
+        : 'Curve slope (3M vs 10Y): macro recession indicator; inversion \u2192 defensive tilt.',
     },
     {
       header: 'Supertrend',
@@ -2708,7 +3292,9 @@ function renderLiveSignal(data) {
       detail: `Line: $${(st.value != null ? st.value : 0).toFixed(2)} &nbsp;|&nbsp; ATR 5, factor 2.0`,
       reading: st.reading || `Direction ${st.direction != null ? st.direction : 0} \u2192 ${st.signal ? 'Bullish (uptrend)' : 'Bearish (downtrend)'}`,
       signal: st.signal,
-      explain: 'Plain English: TradingView-style Supertrend &mdash; price vs ATR bands. Bullish when the model is in the +1 direction (uptrend leg).',
+      explain: learning
+        ? 'Supertrend: ATR bands &mdash; trend-following overlay; vote follows +1 direction (uptrend leg).'
+        : 'Supertrend (ATR 5, factor 2): volatility-scaled trend; binary signal from band structure.',
     },
   ];
 
@@ -2723,6 +3309,328 @@ function renderLiveSignal(data) {
     </div>`
   ).join('');
 }
+
+/* ═══════════════════════════════════════
+   LEARNING LAB: compound sim, quiz, crash game
+   ═══════════════════════════════════════ */
+const LEARNING_LAB_QUIZ = [
+  {
+    q: 'AMCE uses five separate signals and adds up how many say “risk-on.” What is a simple reason we don’t use 400 tuned parameters?',
+    options: [
+      'More knobs usually fit noise in the past and break in the future (overfitting).',
+      'Computers can’t handle 400 numbers.',
+      'Yahoo Finance blocks large models.',
+    ],
+    correct: 0,
+  },
+  {
+    q: 'If your portfolio drops 50%, how much gain do you need to get back to even?',
+    options: ['25%', '50%', '100%'],
+    correct: 2,
+  },
+  {
+    q: 'The VIX index is best described as…',
+    options: [
+      'A measure of how expensive Apple stock is.',
+      'A “fear gauge” for expected short-term stock volatility.',
+      'The US inflation rate.',
+    ],
+    correct: 1,
+  },
+  {
+    q: 'A “1-day execution lag” means…',
+    options: [
+      'You can see tomorrow’s prices today.',
+      'A signal computed at today’s close can only affect trading starting next session.',
+      'Trades happen only on Mondays.',
+    ],
+    correct: 1,
+  },
+  {
+    q: 'Sharpe ratio (roughly) compares…',
+    options: [
+      'Return to the worst day only.',
+      'Return to volatility (risk per unit of bumpiness).',
+      'Dividends to interest rates.',
+    ],
+    correct: 1,
+  },
+];
+
+function initLearningLab() {
+  const y = document.getElementById('compound-years');
+  const r = document.getElementById('compound-rate');
+  const out = document.getElementById('compound-out');
+  const yl = document.getElementById('compound-years-lbl');
+  const rl = document.getElementById('compound-rate-lbl');
+  function updateCompound() {
+    if (!y || !r || !out) return;
+    const years = parseInt(y.value, 10);
+    const ratePct = parseFloat(r.value);
+    if (yl) yl.textContent = String(years);
+    if (rl) rl.textContent = `${ratePct}%`;
+    const fv = 10000 * Math.pow(1 + ratePct / 100, years);
+    out.textContent = '$' + Math.round(fv).toLocaleString();
+    out.classList.remove('pop');
+    void out.offsetWidth;
+    out.classList.add('pop');
+  }
+  if (y && r) {
+    y.addEventListener('input', updateCompound);
+    r.addEventListener('input', updateCompound);
+    updateCompound();
+  }
+
+  const quizHost = document.getElementById('quiz-host');
+  if (quizHost && !quizHost.dataset.inited) {
+    quizHost.dataset.inited = '1';
+    let qIdx = 0;
+    let score = 0;
+    function renderQuizQuestion() {
+      if (qIdx >= LEARNING_LAB_QUIZ.length) {
+        const msg = score >= 4
+          ? `Score ${score}/5 — strong grasp of the basics.`
+          : `Score ${score}/5 — explore the charts and re-run anytime.`;
+        quizHost.innerHTML = `<div class="quiz-score">${msg}</div>`;
+        return;
+      }
+      const Q = LEARNING_LAB_QUIZ[qIdx];
+      quizHost.innerHTML = `
+        <div class="quiz-q">${qIdx + 1}/5. ${Q.q}</div>
+        <div class="quiz-options" id="quiz-options-root"></div>
+      `;
+      const root = document.getElementById('quiz-options-root');
+      Q.options.forEach((text, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'quiz-opt';
+        b.textContent = text;
+        b.addEventListener('click', () => {
+          if (b.disabled) return;
+          const opts = root.querySelectorAll('.quiz-opt');
+          opts.forEach((el) => { el.disabled = true; });
+          if (i === Q.correct) {
+            b.classList.add('correct');
+            score += 1;
+          } else {
+            b.classList.add('wrong');
+            opts[Q.correct].classList.add('correct');
+          }
+          setTimeout(() => {
+            qIdx += 1;
+            renderQuizQuestion();
+          }, 700);
+        });
+        root.appendChild(b);
+      });
+    }
+    renderQuizQuestion();
+  }
+
+  const crashFlash = document.getElementById('crash-flash');
+  const crashStatus = document.getElementById('crash-status');
+  const crashScoreEl = document.getElementById('crash-score');
+  const crashStart = document.getElementById('crash-start');
+  const crashDodge = document.getElementById('crash-dodge');
+  if (!crashStart || crashStart.dataset.bound) return;
+  crashStart.dataset.bound = '1';
+
+  const crash = {
+    round: 0,
+    pts: 0,
+    phase: 'idle',
+    timers: [],
+  };
+
+  function crashClearTimers() {
+    crash.timers.forEach((id) => clearTimeout(id));
+    crash.timers = [];
+  }
+
+  function crashResetUi() {
+    crashClearTimers();
+    crash.phase = 'idle';
+    crash.round = 0;
+    crash.pts = 0;
+    crashStart.disabled = false;
+    crashDodge.disabled = true;
+    if (crashFlash) crashFlash.textContent = '';
+    if (crashStatus) crashStatus.textContent = 'Press Start, stay ready.';
+    if (crashScoreEl) crashScoreEl.textContent = 'Score: 0 / 3';
+  }
+
+  function crashNextRound() {
+    crashClearTimers();
+    if (crash.round >= 3) {
+      if (crashStatus) crashStatus.textContent = `Finished — ${crash.pts}/3 saved in time.`;
+      crashStart.disabled = false;
+      crashDodge.disabled = true;
+      if (crashFlash) crashFlash.textContent = '';
+      const t = setTimeout(crashResetUi, 4500);
+      crash.timers.push(t);
+      return;
+    }
+    crash.round += 1;
+    if (crashStatus) crashStatus.textContent = `Round ${crash.round}/3 — wait for the flash…`;
+    crashDodge.disabled = true;
+    if (crashFlash) crashFlash.textContent = '';
+    crash.phase = 'waiting';
+    const wait = 800 + Math.random() * 1600;
+    const t1 = setTimeout(() => {
+      crash.phase = 'open';
+      if (crashFlash) crashFlash.textContent = 'CRASH!';
+      crashDodge.disabled = false;
+      const deadline = Date.now() + 650;
+      const t2 = setTimeout(() => {
+        if (crash.phase === 'open') {
+          crash.phase = 'miss';
+          if (crashStatus) crashStatus.textContent = 'Missed — still in risk assets.';
+          crashDodge.disabled = true;
+          if (crashFlash) crashFlash.textContent = '';
+          const t3 = setTimeout(crashNextRound, 900);
+          crash.timers.push(t3);
+        }
+      }, 650);
+      crash.deadline = deadline;
+      crash.timers.push(t2);
+    }, wait);
+    crash.timers.push(t1);
+  }
+
+  crashStart.addEventListener('click', () => {
+    if (crash.phase !== 'idle') return;
+    crashClearTimers();
+    crash.round = 0;
+    crash.pts = 0;
+    crash.phase = 'run';
+    crashStart.disabled = true;
+    if (crashScoreEl) crashScoreEl.textContent = 'Score: 0 / 3';
+    crashNextRound();
+  });
+
+  crashDodge.addEventListener('click', () => {
+    if (crash.phase !== 'open') return;
+    if (Date.now() > crash.deadline) return;
+    crash.phase = 'hit';
+    crash.pts += 1;
+    if (crashScoreEl) crashScoreEl.textContent = `Score: ${crash.pts} / 3`;
+    if (crashStatus) crashStatus.textContent = 'Rotated to bonds in time.';
+    crashDodge.disabled = true;
+    if (crashFlash) crashFlash.textContent = '';
+    const t = setTimeout(crashNextRound, 650);
+    crash.timers.push(t);
+  });
+}
+
+/* ═══════════════════════════════════════
+   CLIFF REPLAY + MATCH SIGNAL GAME
+   ═══════════════════════════════════════ */
+function initCliffReplay() {
+  const scene = document.getElementById('cliff-scene');
+  const btn = document.getElementById('cliff-replay');
+  if (!scene || !btn || btn.dataset.bound) return;
+  btn.dataset.bound = '1';
+  btn.addEventListener('click', () => {
+    scene.classList.remove('cliff-animating');
+    void scene.offsetWidth;
+    scene.classList.add('cliff-animating');
+  });
+}
+
+const MATCH_ROUNDS = [
+  {
+    clue: 'Which rule checks whether price is above a slow-moving average (about one year of trading days)?',
+    key: 'ma200',
+  },
+  {
+    clue: 'Which rule compares 12-month return to 1-month return to judge whether the trend has “speed”?',
+    key: 'momentum',
+  },
+  {
+    clue: 'Which rule uses the market’s fear index (implied volatility) with a stress threshold around 25?',
+    key: 'vix',
+  },
+  {
+    clue: 'Which rule compares short-term vs long-term Treasury yields to flag recession risk?',
+    key: 'yield',
+  },
+  {
+    clue: 'Which rule uses ATR-based bands so trends are clearer when volatility changes?',
+    key: 'supertrend',
+  },
+];
+
+const MATCH_LABELS = {
+  momentum: '12-1 Momentum',
+  ma200: '200-day MA',
+  vix: 'VIX regime',
+  yield: 'Yield curve',
+  supertrend: 'Supertrend',
+};
+
+function shuffleMatchKeys(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initMatchGame() {
+  const host = document.getElementById('match-host');
+  if (!host || host.dataset.inited) return;
+  host.dataset.inited = '1';
+  const keys = Object.keys(MATCH_LABELS);
+  let qIdx = 0;
+  let score = 0;
+
+  function renderMatchRound() {
+    if (qIdx >= MATCH_ROUNDS.length) {
+      host.innerHTML = `<div class="quiz-score">Matched ${score}/${MATCH_ROUNDS.length}. ${
+        score >= 4 ? 'You know which rule does what.' : 'Re-read the signal cards after you run analysis.'
+      }</div>`;
+      return;
+    }
+    const R = MATCH_ROUNDS[qIdx];
+    const order = shuffleMatchKeys(keys);
+    host.innerHTML = `
+      <div class="quiz-q">${qIdx + 1}/5. ${R.clue}</div>
+      <div class="match-options" id="match-options-root"></div>
+    `;
+    const root = document.getElementById('match-options-root');
+    order.forEach((k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'match-opt';
+      b.textContent = MATCH_LABELS[k];
+      b.dataset.key = k;
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        root.querySelectorAll('.match-opt').forEach((el) => { el.disabled = true; });
+        if (k === R.key) {
+          b.classList.add('correct');
+          score += 1;
+        } else {
+          b.classList.add('wrong');
+          const right = root.querySelector(`[data-key="${R.key}"]`);
+          if (right) right.classList.add('correct');
+        }
+        setTimeout(() => {
+          qIdx += 1;
+          renderMatchRound();
+        }, 750);
+      });
+      root.appendChild(b);
+    });
+  }
+
+  renderMatchRound();
+}
+
+initLearningLab();
+initCliffReplay();
+initMatchGame();
 </script>
 </body>
 </html>

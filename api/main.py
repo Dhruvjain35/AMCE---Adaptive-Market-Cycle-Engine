@@ -228,8 +228,14 @@ async def analyze(req: AnalyzeRequest):
         4,
     )
 
+    hac_p = round(result.hac_mean_return_pvalue, 4)
+    perm_p = round(result.permutation_p_value, 4)
     perm_block = {
-        "p_value": round(result.permutation_p_value, 4),
+        # Headline significance: HAC on OOS mean daily return (serial-correlation robust)
+        "p_value": hac_p,
+        "hac_mean_return_p_value": hac_p,
+        # Timing-shuffle null (same weekly blocks, random order) — Sharpe vs permutation
+        "timing_shuffle_p_value": perm_p,
         "strategy_sharpe": sm["sharpe"],
         "null_distribution": null_sharpes,
         "null_mean": round(null_mean, 4),
@@ -242,7 +248,8 @@ async def analyze(req: AnalyzeRequest):
         "covid_pct_in_cash_feb_apr_2020": covid_pct_cash,
         "null_sharpe_mean": round(null_mean, 4),
         "null_sharpe_std": round(null_std, 4),
-        "permutation_p_value": round(result.permutation_p_value, 4),
+        "hac_mean_return_p_value": hac_p,
+        "permutation_p_value": perm_p,
         "random_strategies_beaten_pct": round(beaten_frac * 100, 1),
     }
 

@@ -21,6 +21,7 @@ No parameter was chosen by backtesting. No parameter is tuned in-sample.
 
 from __future__ import annotations
 
+import math
 import warnings
 from dataclasses import dataclass
 from typing import Any
@@ -43,6 +44,7 @@ class StrategyResult:
     benchmark_metrics: dict[str, float]
     benchmark_6040_metrics: dict[str, float]
     permutation_p_value: float
+    hac_mean_return_pvalue: float
     oos_start: str
     oos_end: str
     gross_equity_curve: pd.Series   # before transaction costs
@@ -348,6 +350,46 @@ def _backtest(
     return df["net_ret"], df["gross_equity"], df["net_equity"], trades
 
 
+# ─── HAC mean-return p-value (Newey–West) ────────────────────────────
+
+def _hac_mean_return_pvalue(returns: pd.Series, max_lags: int = 5) -> float:
+    """
+    One-sided p-value for H0: E[r] <= 0 vs H1: E[r] > 0 on OOS daily returns.
+
+    Uses Newey–West heteroskedasticity- and autocorrelation-consistent
+    variance for the sample mean (Bartlett kernel weights). This is the
+    standard way to report significance when daily returns are not i.i.d.
+
+    This does not replace the permutation test on Sharpe (timing shuffle);
+    it answers a different question: is the average return positive after
+    allowing for serial dependence?
+    """
+    x = returns.dropna().astype(float)
+    n = len(x)
+    if n < 30:
+        return 1.0
+    arr = x.values
+    xbar = float(np.mean(arr))
+    x_dm = arr - xbar
+    gamma0 = float(np.dot(x_dm, x_dm)) / n
+    lrv = gamma0
+    for j in range(1, max_lags + 1):
+        w = 1.0 - j / (max_lags + 1)
+        g = float(np.dot(x_dm[j:], x_dm[:-j])) / n
+        lrv += 2.0 * w * g
+    var_mean = lrv / n
+    if var_mean <= 0 or not math.isfinite(var_mean):
+        return 1.0
+    se = math.sqrt(var_mean)
+    if se <= 0:
+        return 1.0
+    t = xbar / se
+    if t <= 0:
+        return 1.0
+    p = 1.0 - 0.5 * (1.0 + math.erf(t / math.sqrt(2.0)))
+    return float(min(max(p, 1e-300), 1.0))
+
+
 # ─── Permutation test ───────────────────────────────────────────────
 
 def _permutation_test(
@@ -572,11 +614,12 @@ def run_strategy(
         trades_per_year * cost_bps / 10_000 * 0.5, 4  # avg turnover per trade ~ 0.5
     )
 
-    # ── 8. Permutation test (OOS only) ─────────────────────────────
+    # ── 8. Permutation test (OOS only) + HAC p on mean return ──────
     p_value = _permutation_test(
         oos_signals, strategy_metrics["sharpe"],
         n_perms=n_permutations, cost_bps=cost_bps,
     )
+    hac_p = _hac_mean_return_pvalue(oos_net)
 
     # ── 9. Rolling Sharpe & Drawdown ───────────────────────────────
     rolling_sharpe = (
@@ -602,6 +645,7 @@ def run_strategy(
         benchmark_metrics=benchmark_metrics_dict,
         benchmark_6040_metrics=bench_6040_metrics,
         permutation_p_value=p_value,
+        hac_mean_return_pvalue=hac_p,
         oos_start=oos_start,
         oos_end=str(signals.index[-1].date()),
         gross_equity_curve=gross_equity[oos_mask] / gross_equity[oos_mask].iloc[0],
