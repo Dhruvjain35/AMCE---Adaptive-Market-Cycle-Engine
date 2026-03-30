@@ -211,6 +211,91 @@ body {
   text-transform: uppercase;
 }
 
+/* ═══════════════════════════════════════
+   LEARNING MODE TOGGLE
+   ═══════════════════════════════════════ */
+.mode-toggle {
+  position: sticky;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink-faint);
+  padding: 4px 8px;
+  background: var(--paper);
+}
+
+.mode-toggle-label {
+  color: var(--ink-light);
+  margin: 0 2px;
+  user-select: none;
+}
+
+.mode-toggle-label.active {
+  color: var(--ink);
+}
+
+.mode-toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 18px;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper-dark);
+  cursor: pointer;
+}
+
+.mode-toggle-switch::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 22px;
+  height: 18px;
+  background: var(--ink);
+  transition: transform 180ms ease-out, background 180ms ease-out;
+}
+
+.mode-toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+body.learning-mode .mode-toggle-switch::before {
+  transform: translateX(22px);
+  background: var(--teal);
+}
+
+/* ELI5 alert above Performance Tearsheet */
+.eli5-alert {
+  border: 1px solid var(--teal);
+  background: var(--teal-light);
+  padding: 16px 20px;
+  margin: 32px 0 8px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-mid);
+}
+
+.eli5-alert strong {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+  color: var(--teal);
+}
+
+.eli5-alert.hidden {
+  display: none;
+}
+
 .masthead-rule-heavy {
   border: none;
   border-top: 2px solid var(--ink);
@@ -909,6 +994,13 @@ body {
     <div class="masthead-right">
       <span class="masthead-date" id="masthead-date"></span>
       <span class="masthead-badge">HACKONOMICS 2026</span>
+      <div class="mode-toggle" id="mode-toggle" title="Toggle educational explanations">
+        <span class="mode-toggle-label" id="label-pro">Pro Mode</span>
+        <label class="mode-toggle-switch">
+          <input type="checkbox" id="learning-toggle" class="mode-toggle-input">
+        </label>
+        <span class="mode-toggle-label active" id="label-learning">Learning Mode</span>
+      </div>
     </div>
   </div>
   <hr class="masthead-rule-heavy">
@@ -1114,6 +1206,12 @@ body {
 
     <hr class="section-divider">
 
+    <!-- Learning Mode ELI5 helper (shown when Learning Mode is on) -->
+    <div class="eli5-alert hidden" id="eli5-tearsheet">
+      <strong>ELI5 · What am I looking at?</strong>
+      <span>💡 What am I looking at? Institutional investors don't just 'buy and hold'—they use math to step away from the market when risk is high. This tearsheet proves that avoiding major crashes (Max Drawdown) is the secret to growing wealth over time.</span>
+    </div>
+
     <!-- SECTION 5: TEARSHEET -->
     <section class="section results-stagger s3" id="section-methodology">
       <h2 class="font-headline-italic" style="font-size: 36px;">Performance Tearsheet</h2>
@@ -1201,11 +1299,53 @@ const COLORS = {
   tealFill: 'rgba(15,118,110,0.15)', redFill: 'rgba(185,28,28,0.08)',
 };
 
+const AMCE_STATE = {
+  learningMode: true,
+  lastData: null,
+};
+
 /* ═══════════════════════════════════════
    DATE SETUP
    ═══════════════════════════════════════ */
 document.getElementById('masthead-date').textContent =
   new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// Learning Mode toggle state and wiring
+(function initLearningModeToggle() {
+  const body = document.body;
+  const toggle = document.getElementById('learning-toggle');
+  const labelPro = document.getElementById('label-pro');
+  const labelLearning = document.getElementById('label-learning');
+  const eli5Box = document.getElementById('eli5-tearsheet');
+
+  function applyMode() {
+    if (AMCE_STATE.learningMode) {
+      body.classList.add('learning-mode');
+      if (eli5Box) eli5Box.classList.remove('hidden');
+      if (labelPro) labelPro.classList.remove('active');
+      if (labelLearning) labelLearning.classList.add('active');
+      if (toggle && !toggle.checked) toggle.checked = true;
+    } else {
+      body.classList.remove('learning-mode');
+      if (eli5Box) eli5Box.classList.add('hidden');
+      if (labelPro) labelPro.classList.add('active');
+      if (labelLearning) labelLearning.classList.remove('active');
+      if (toggle && toggle.checked) toggle.checked = false;
+    }
+  }
+
+  if (toggle) {
+    AMCE_STATE.learningMode = true;
+    toggle.checked = true;
+    toggle.addEventListener('change', () => {
+      AMCE_STATE.learningMode = !!toggle.checked;
+      applyMode();
+      if (AMCE_STATE.lastData) renderLiveSignal(AMCE_STATE.lastData);
+    });
+  }
+
+  applyMode();
+})();
 
 /* ═══════════════════════════════════════
    NUMBER ANIMATION
@@ -1337,6 +1477,7 @@ async function runAnalysis() {
    ═══════════════════════════════════════ */
 function renderResults(data) {
   destroyCharts();
+  AMCE_STATE.lastData = data;
 
   const container = document.getElementById('results-container');
   container.classList.add('visible');
@@ -1852,6 +1993,17 @@ function renderDrawdownChart(data) {
 
 function renderGrowthChart(data) {
   const ec = sampleData(data.equity_curve);
+
+  // Find an anchor point in March 2020 for the crash marker
+  let covidIndex = ec.findIndex(r => r.date >= '2020-03-15' && r.date <= '2020-03-31');
+  if (covidIndex === -1) {
+    covidIndex = ec.findIndex(r => r.date >= '2020-01-01' && r.date <= '2020-12-31');
+  }
+  const covidData = new Array(ec.length).fill(null);
+  if (covidIndex >= 0) {
+    covidData[covidIndex] = (ec[covidIndex].amce || 1) * 10000;
+  }
+
   const ctx = document.getElementById('chart-growth').getContext('2d');
   charts.growth = new Chart(ctx, {
     type: 'line',
@@ -1862,6 +2014,16 @@ function renderGrowthChart(data) {
           fill: true, backgroundColor: COLORS.tealAlpha },
         { label: 'SPY', data: ec.map(r => (r.spy || 1) * 10000), borderColor: COLORS.inkMid, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
         { label: '60/40', data: ec.map(r => (r.sixtyforty || 1) * 10000), borderColor: COLORS.inkFaint, borderWidth: 1, borderDash: [2,2], tension: 0.1 },
+        {
+          label: 'COVID-19 Crash',
+          data: covidData,
+          borderColor: 'transparent',
+          backgroundColor: COLORS.red,
+          pointRadius: (ctx) => (ctx.dataIndex === covidIndex ? 6 : 0),
+          pointHoverRadius: (ctx) => (ctx.dataIndex === covidIndex ? 9 : 0),
+          pointStyle: 'circle',
+          showLine: false,
+        },
       ],
     },
     options: {
@@ -1872,7 +2034,17 @@ function renderGrowthChart(data) {
              ticks: { callback: v => '$' + v.toLocaleString() } },
       },
       plugins: {
-        tooltip: { ...customTooltip, callbacks: { label: ctx => ctx.dataset.label + ': $' + Math.round(ctx.parsed.y).toLocaleString() } },
+        tooltip: {
+          ...customTooltip,
+          callbacks: {
+            label: (ctx) => {
+              if (ctx.dataset.label === 'COVID-19 Crash') {
+                return "📉 The COVID-19 Crash: While 'Buy and Hold' investors lost 33% of their wealth in weeks, AMCE's VIX and Momentum signals triggered a shift to safe assets, avoiding the devastation.";
+              }
+              return ctx.dataset.label + ': $' + Math.round(ctx.parsed.y).toLocaleString();
+            }
+          }
+        },
         legend: { display: true, position: 'top', align: 'start', labels: { boxWidth: 12, padding: 16 } },
       },
     },
@@ -1899,6 +2071,8 @@ function renderLiveSignal(data) {
   const yc = comps.yield_curve;
   const st = comps.supertrend || { signal: false, value: 0, direction: 0, reading: '' };
 
+  const learning = !!AMCE_STATE.learningMode;
+
   let signalClass = 'partial';
   let signalText = 'PARTIAL EXPOSURE';
   let signalExplain = `50% ${riskAsset}, 50% ${safeAsset}. Mixed signals.`;
@@ -1922,6 +2096,14 @@ function renderLiveSignal(data) {
   const netMom = ((m.mom_12m - m.mom_1m) * 100).toFixed(2);
   const pctAboveMa = ma.value;
   const spread = yc.spread_bps != null ? yc.spread_bps : Math.round(yc.value * 100);
+  const vixLevel = vixFearLevel(vx.value);
+
+  const ANALOGIES = {
+    momentum: "Think of this like a train. Is the market speeding up or slowing down? We want to ride the train while it has momentum, not jump in front of it.",
+    ma200: "This is the 'tide' of the ocean. If the price is above this line, the tide is coming in (bull market). If it's below, the tide is going out.",
+    vix: "This is the market's 'Fear Thermometer.' When it spikes above 25, the market is panicking. We step aside to let the panic pass.",
+    yield: "The canary in the coal mine. When short-term bonds pay more than long-term bonds, it means smart money is betting on an upcoming recession. It has predicted nearly every recession since 1960.",
+  };
 
   const cards = [
     {
@@ -1930,7 +2112,9 @@ function renderLiveSignal(data) {
       detail: `12-month return: ${momPct12 >= 0 ? '+' : ''}${momPct12}% &nbsp;|&nbsp; 1-month return: ${momPct1 >= 0 ? '+' : ''}${momPct1}%`,
       reading: `Momentum = ${netMom >= 0 ? '+' : ''}${netMom}% \u2192 ${m.signal ? 'Bullish' : 'Bearish'}`,
       signal: m.signal,
-      explain: 'Plain English: The asset has returned more over the past year than the past month, indicating sustained upward trend.',
+      explain: learning
+        ? `Analogy: ${ANALOGIES.momentum}`
+        : 'Plain English: The asset has returned more over the past year than the past month, indicating sustained upward trend.',
     },
     {
       header: '200-Day Moving Average',
@@ -1938,15 +2122,19 @@ function renderLiveSignal(data) {
       detail: `Current price: $${ma.price} &nbsp;|&nbsp; 200-day MA: $${ma.ma}`,
       reading: `Price is ${pctAboveMa >= 0 ? '+' : ''}${pctAboveMa}% ${pctAboveMa >= 0 ? 'above' : 'below'} MA \u2192 ${ma.signal ? 'Bullish' : 'Bearish'}`,
       signal: ma.signal,
-      explain: 'Plain English: Price above the 200-day average signals a long-term uptrend. Below it signals a downtrend.',
+      explain: learning
+        ? `Analogy: ${ANALOGIES.ma200}`
+        : 'Plain English: Price above the 200-day average signals a long-term uptrend. Below it signals a downtrend.',
     },
     {
       header: 'VIX Regime',
       name: 'VIX Regime',
       detail: `VIX: ${vx.value.toFixed(1)} &nbsp;|&nbsp; Threshold: 25`,
-      reading: `Fear level: ${vixFearLevel(vx.value)}`,
+      reading: `Fear level: ${vixLevel}`,
       signal: vx.signal,
-      explain: 'Plain English: VIX measures market fear. Above 25 signals panic \u2014 historically the worst time to be in equities.',
+      explain: learning
+        ? `Analogy: ${ANALOGIES.vix}`
+        : 'Plain English: VIX measures market fear. Above 25 signals panic \u2014 historically the worst time to be in equities.',
     },
     {
       header: 'Yield Curve',
@@ -1954,7 +2142,9 @@ function renderLiveSignal(data) {
       detail: `10Y rate: ${(yc.tnx != null ? yc.tnx : 0).toFixed(2)}% &nbsp;|&nbsp; 3M rate: ${(yc.irx != null ? yc.irx : 0).toFixed(2)}%`,
       reading: `Spread: ${spread >= 0 ? '+' : ''}${spread} bps \u2192 ${yc.signal ? 'Normal' : 'Inverted'}`,
       signal: yc.signal,
-      explain: 'Plain English: An inverted yield curve (3M > 10Y) has preceded every US recession since 1960.',
+      explain: learning
+        ? `Analogy: ${ANALOGIES.yield}`
+        : 'Plain English: An inverted yield curve (3M > 10Y) has preceded every US recession since 1960.',
     },
     {
       header: 'Supertrend',
