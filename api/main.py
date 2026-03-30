@@ -206,6 +206,21 @@ async def analyze(req: AnalyzeRequest):
             eq_map[r["date"]]["gross"] = r["gross"]
     equity_records = list(eq_map.values())
 
+    # Full-sample curves for growth chart crash-window zoom (includes pre-OOS history)
+    eq_full_a = _series_to_records(result.full_equity_curve, "amce")
+    eq_full_spy = _series_to_records(result.full_benchmark_equity, "spy")
+    eq_full_6040 = _series_to_records(result.full_benchmark_6040_equity, "sixtyforty")
+    eq_full_map: dict[str, dict] = {}
+    for r in eq_full_a:
+        eq_full_map[r["date"]] = {"date": r["date"], "amce": r["amce"]}
+    for r in eq_full_spy:
+        if r["date"] in eq_full_map:
+            eq_full_map[r["date"]]["spy"] = r["spy"]
+    for r in eq_full_6040:
+        if r["date"] in eq_full_map:
+            eq_full_map[r["date"]]["sixtyforty"] = r["sixtyforty"]
+    equity_records_full = sorted(eq_full_map.values(), key=lambda x: str(x["date"]))
+
     rolling_sharpe = _series_to_records(result.rolling_sharpe, "sharpe")
 
     dd_amce = _series_to_records(result.drawdown_series, "amce_dd")
@@ -329,6 +344,7 @@ async def analyze(req: AnalyzeRequest):
         "oos_start": result.oos_start,
         "oos_end": result.oos_end,
         "equity_curve": equity_records,
+        "equity_curve_full": equity_records_full,
         "signals": signals_records,
         "rolling_sharpe": rolling_sharpe,
         "drawdown": drawdown_records,

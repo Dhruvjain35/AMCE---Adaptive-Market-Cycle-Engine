@@ -36,9 +36,12 @@ import yfinance as yf
 class StrategyResult:
     """Immutable result bundle from a single strategy run."""
     returns: pd.Series              # daily net-of-cost strategy returns
-    equity_curve: pd.Series         # cumulative strategy wealth ($1 start)
-    benchmark_equity: pd.Series     # cumulative SPY wealth ($1 start)
-    benchmark_6040_equity: pd.Series  # cumulative 60/40 wealth ($1 start)
+    equity_curve: pd.Series         # cumulative strategy wealth ($1 start), OOS only
+    benchmark_equity: pd.Series     # cumulative SPY wealth ($1 start), OOS only
+    benchmark_6040_equity: pd.Series  # cumulative 60/40 wealth ($1 start), OOS only
+    full_equity_curve: pd.Series    # full-sample net equity (for UI crash-window zoom)
+    full_benchmark_equity: pd.Series
+    full_benchmark_6040_equity: pd.Series
     signals_df: pd.DataFrame        # all signals, scores, exposures
     metrics_dict: dict[str, float]  # CAGR, Sharpe, MaxDD, etc.
     benchmark_metrics: dict[str, float]
@@ -640,6 +643,9 @@ def run_strategy(
         equity_curve=oos_equity,
         benchmark_equity=oos_bench_equity,
         benchmark_6040_equity=(1 + oos_6040).cumprod(),
+        full_equity_curve=net_equity,
+        full_benchmark_equity=bench_equity,
+        full_benchmark_6040_equity=bench_6040_equity,
         signals_df=signals,
         metrics_dict=strategy_metrics,
         benchmark_metrics=benchmark_metrics_dict,

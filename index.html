@@ -950,6 +950,7 @@ body.pro-mode .hero-body {
 .results-stagger.s3 { animation-delay: 160ms; }
 .results-stagger.s4 { animation-delay: 240ms; }
 .results-stagger.s5 { animation-delay: 320ms; }
+.results-stagger.s6 { animation-delay: 400ms; }
 
 .turnover-lines {
   font-family: 'DM Mono', monospace;
@@ -1322,6 +1323,76 @@ body.pro-mode .hero-body {
   margin-bottom: 12px;
 }
 
+body.learning-mode .edu-panel {
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+body.learning-mode .edu-panel:hover {
+  box-shadow: 0 10px 28px rgba(15, 118, 110, 0.1);
+  transform: translateY(-3px);
+}
+body.pro-mode .edu-panel {
+  transition: box-shadow 0.25s ease;
+}
+body.pro-mode .edu-panel:hover {
+  box-shadow: 0 6px 18px rgba(26, 25, 22, 0.08);
+}
+
+.chart-container.chart-zoom-flash {
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.45);
+  border-radius: 4px;
+  transition: box-shadow 0.35s ease;
+}
+
+.post-lab-section {
+  border: 1px solid var(--ink-faint);
+  padding: 28px 22px 32px;
+  margin-top: 8px;
+  background: linear-gradient(165deg, rgba(224, 242, 241, 0.2) 0%, var(--paper) 55%);
+}
+.post-lab-kicker {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 8px;
+}
+body.pro-mode .post-lab-section {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: var(--ink-faint);
+}
+
+.sim-card {
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+body.learning-mode .sim-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 118, 110, 0.35);
+}
+
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+body.learning-mode .pretest-lab .lab-card:nth-child(odd) {
+  animation: floatSoft 5s ease-in-out infinite;
+}
+body.learning-mode .pretest-lab .lab-card:nth-child(even) {
+  animation: floatSoft 5.8s ease-in-out infinite 0.5s;
+}
+body.pro-mode .pretest-lab .lab-card {
+  animation: none;
+}
+
+/* Light section accents (Learning + Pro) */
+.section-anim-strip {
+  box-shadow: inset 4px 0 0 rgba(15, 118, 110, 0.22);
+  padding-left: 8px;
+  margin-left: -8px;
+}
+body.pro-mode .section-anim-strip {
+  box-shadow: inset 4px 0 0 rgba(26, 25, 22, 0.18);
+}
+
 .key-insight {
   background: var(--paper-dark);
   border: 1px solid var(--ink-faint);
@@ -1637,11 +1708,11 @@ body.pro-mode .hero-body {
   </section>
 
   <!-- Learning Lab: interactive playground (Learning Mode only) -->
-  <section class="section learning-only learning-lab" id="section-learning-lab" aria-label="Learning lab">
-    <div class="learning-lab-kicker">Interactive · try this first</div>
-    <h2>Learning Lab</h2>
+  <section class="section learning-only learning-lab pretest-lab section-anim" id="section-learning-lab" aria-label="Pre-test lab">
+    <div class="learning-lab-kicker">Before you run analysis</div>
+    <h2>Pre-test Lab</h2>
     <p class="learning-lab-intro">
-      Tiny simulations, quick quiz, a drawdown animation, and a matching game. None of this changes the real backtest &mdash; it builds intuition so the charts make sense.
+      Tiny simulations, quick quiz, a drawdown animation, and a matching game. None of this changes the real backtest &mdash; it warms you up so the real results click.
     </p>
     <div class="lab-grid">
       <div class="lab-card">
@@ -1774,7 +1845,7 @@ body.pro-mode .hero-body {
     <hr class="section-divider">
 
     <!-- SECTION 3: THE VERDICT -->
-    <section class="section results-stagger s1" id="section-verdict">
+    <section class="section results-stagger s1 section-anim-strip" id="section-verdict">
       <div class="results-kicker" id="results-kicker"></div>
       <div class="hotspots learning-only" id="hotspots-verdict">
         <button class="hotspot-btn" onclick="openLearn('verdict')">What is the verdict?</button>
@@ -1808,7 +1879,7 @@ body.pro-mode .hero-body {
     <hr class="section-divider">
 
     <!-- SECTION 4: EDUCATION -->
-    <section class="section results-stagger s2" id="section-education">
+    <section class="section results-stagger s2 section-anim-strip" id="section-education">
       <h2 class="font-headline-italic education-header" id="education-main-title" style="font-size: 36px;">Understanding the Results</h2>
       <p class="education-subhead" id="education-subhead">Each concept below is explained using your actual results &mdash; not textbook examples.</p>
 
@@ -1904,7 +1975,7 @@ body.pro-mode .hero-body {
     </div>
 
     <!-- SECTION 5: TEARSHEET -->
-    <section class="section results-stagger s3" id="section-methodology">
+    <section class="section results-stagger s3 section-anim-strip" id="section-methodology">
       <h2 class="font-headline-italic" id="tearsheet-section-title" style="font-size: 36px;">Performance Tearsheet</h2>
       <div class="tearsheet-subhead" id="tearsheet-subhead"></div>
 
@@ -1926,7 +1997,7 @@ body.pro-mode .hero-body {
     <hr class="section-divider">
 
     <!-- SECTION 6: GROWTH OF $10K -->
-    <section class="section results-stagger s4" id="section-growth">
+    <section class="section results-stagger s4 section-anim-strip" id="section-growth">
       <h2 class="font-headline-italic" id="growth-section-title" style="font-size: 32px;">Growth of $10,000</h2>
       <div class="learn-toolbar" id="crash-toolbar">
         <button class="pill-btn active" data-window="all" onclick="setCrashWindow('all')">Normal</button>
@@ -1947,7 +2018,7 @@ body.pro-mode .hero-body {
     <hr class="section-divider">
 
     <!-- SECTION 7: LIVE SIGNAL -->
-    <section class="section results-stagger s5" id="section-signal">
+    <section class="section results-stagger s5 section-anim-strip" id="section-signal">
       <h2 class="font-headline-italic" style="font-size: 32px;">Today's Signal</h2>
       <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px;">
         Updated Daily &middot; Based on Yesterday's Close
@@ -1962,6 +2033,36 @@ body.pro-mode .hero-body {
         </div>
       </div>
       <div class="two-by-two" id="signal-cards"></div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Post-test Lab (after analysis — uses your numbers) -->
+    <section class="section results-stagger s6 post-lab-section section-anim section-anim-strip" id="section-post-lab">
+      <div class="post-lab-kicker font-mono">After your run</div>
+      <h2 class="font-headline-italic post-lab-title" style="font-size: 28px;">Post-test Lab</h2>
+      <p class="mini-note post-lab-intro" id="post-lab-intro"></p>
+      <div class="lab-grid">
+        <div class="lab-card post-lab-card sim-card">
+          <div class="lab-card-title">Quick check · your OOS numbers</div>
+          <div id="post-lab-quiz-host"></div>
+        </div>
+        <div class="lab-card post-lab-card sim-card">
+          <div class="lab-card-title">Guess vs reality · wealth path</div>
+          <p class="mini-note" id="post-lab-slider-hint">Slide to guess AMCE&rsquo;s final $10k value; reveal the truth.</p>
+          <input type="range" id="post-lab-guess" min="5000" max="50000" step="500" value="15000" class="range" style="width:100%;max-width:280px;">
+          <div class="compound-row">
+            <span class="font-mono" id="post-lab-guess-lbl">Guess: $15,000</span>
+          </div>
+          <button type="button" class="btn-cliff-replay" id="post-lab-reveal">Reveal actual</button>
+          <div class="mini-note" id="post-lab-reveal-out" style="margin-top:10px;"></div>
+        </div>
+        <div class="lab-card post-lab-card sim-card">
+          <div class="lab-card-title">Signal speed round</div>
+          <p class="mini-note">Tap the rule that best matches the hint (uses the same five rules as AMCE).</p>
+          <div id="post-lab-match-host"></div>
+        </div>
+      </div>
     </section>
 
     <hr class="section-divider">
@@ -2472,6 +2573,7 @@ function renderResults(data, opts = {}) {
   updateWhyToday();
 
   bindLearnSurfaces();
+  renderPostLab(data);
 
   if (!opts.skipScroll) {
     document.getElementById('section-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2667,6 +2769,160 @@ function renderToyRules() {
   computeToy();
 }
 
+function renderPostLab(data) {
+  const learn = !!AMCE_STATE.learningMode;
+  const sm = data.metrics;
+  const bm = data.benchmark_metrics;
+  const w = data.wealth;
+  const intro = document.getElementById('post-lab-intro');
+  const title = document.querySelector('.post-lab-title');
+  if (title) {
+    title.textContent = learn ? 'Post-test Lab' : 'Post-run checks';
+  }
+  if (intro) {
+    intro.textContent = learn
+      ? `You ran the real engine. These use your OOS results: Sharpe ${sm.sharpe.toFixed(2)}, CAGR ${(sm.cagr * 100).toFixed(1)}%, vs SPY ${(bm.cagr * 100).toFixed(1)}%.`
+      : `OOS metrics: AMCE Sharpe ${sm.sharpe.toFixed(2)}, CAGR ${(sm.cagr * 100).toFixed(1)}% · SPY ${(bm.cagr * 100).toFixed(1)}%.`;
+  }
+  renderPostLabQuiz(data);
+  initPostLabWealthGuess(data);
+  renderPostLabMatch();
+}
+
+function renderPostLabQuiz(data) {
+  const host = document.getElementById('post-lab-quiz-host');
+  if (!host) return;
+  const sm = data.metrics;
+  const bm = data.benchmark_metrics;
+  const w = data.wealth;
+  const spyDeeper = bm.max_drawdown < sm.max_drawdown;
+  const qs = [
+    {
+      q: `Your OOS Sharpe is ${sm.sharpe.toFixed(2)}. Is that above a common “decent” bar of 0.5?`,
+      opts: ['Yes', 'No'],
+      correct: sm.sharpe > 0.5 ? 0 : 1,
+    },
+    {
+      q: `From $10k: AMCE ended ~$${Math.round(w.amce_final).toLocaleString()} vs SPY ~$${Math.round(w.spy_final).toLocaleString()}. Did AMCE finish higher?`,
+      opts: ['Yes', 'No'],
+      correct: w.amce_final >= w.spy_final ? 0 : 1,
+    },
+    {
+      q: 'Which path had the worse (deeper) max drawdown?',
+      opts: ['AMCE', 'SPY'],
+      correct: spyDeeper ? 1 : 0,
+    },
+  ];
+  let idx = 0;
+  let score = 0;
+  function renderQ() {
+    if (idx >= qs.length) {
+      host.innerHTML = `<div class="quiz-score">${score === qs.length ? 'Perfect — you read the tearsheet.' : `Score ${score}/${qs.length}. Compare the metric strip above.`}</div>`;
+      return;
+    }
+    const Q = qs[idx];
+    host.innerHTML = `<div class="quiz-q">${idx + 1}/3. ${Q.q}</div><div class="quiz-options" id="pl-quiz-root"></div>`;
+    const root = document.getElementById('pl-quiz-root');
+    Q.opts.forEach((label, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'quiz-opt';
+      b.textContent = label;
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        root.querySelectorAll('.quiz-opt').forEach((el) => { el.disabled = true; });
+        if (i === Q.correct) {
+          b.classList.add('correct');
+          score += 1;
+        } else {
+          b.classList.add('wrong');
+          root.querySelectorAll('.quiz-opt')[Q.correct].classList.add('correct');
+        }
+        setTimeout(() => { idx += 1; renderQ(); }, 650);
+      });
+      root.appendChild(b);
+    });
+  }
+  renderQ();
+}
+
+function initPostLabWealthGuess(data) {
+  const w = data.wealth;
+  const slider = document.getElementById('post-lab-guess');
+  const lbl = document.getElementById('post-lab-guess-lbl');
+  const btn = document.getElementById('post-lab-reveal');
+  const out = document.getElementById('post-lab-reveal-out');
+  const hint = document.getElementById('post-lab-slider-hint');
+  if (!slider || !lbl || !btn || !out) return;
+  const actual = Math.round(w.amce_final);
+  const min = Math.max(3000, Math.floor(actual * 0.35));
+  const max = Math.min(250000, Math.ceil(actual * 1.65));
+  slider.min = String(min);
+  slider.max = String(max);
+  slider.step = actual > 20000 ? '500' : '250';
+  slider.value = String(Math.round((min + max) / 2));
+  function syncLbl() {
+    const g = parseInt(slider.value, 10);
+    lbl.textContent = `Guess: $${g.toLocaleString()}`;
+  }
+  syncLbl();
+  slider.oninput = syncLbl;
+  btn.onclick = () => {
+    const g = parseInt(slider.value, 10);
+    const errPct = actual ? Math.abs(g - actual) / actual * 100 : 0;
+    out.innerHTML = `Actual AMCE (OOS, $10k start): <span class="font-mono">$${actual.toLocaleString()}</span>. Off by ${errPct.toFixed(0)}%.`;
+  };
+  if (hint) {
+    hint.textContent = 'Slide to guess AMCE final value from $10k; reveal compares to your run.';
+  }
+}
+
+const POST_LAB_MATCH = [
+  { clue: 'Which signal is the “fear gauge” threshold?', key: 'vix' },
+  { clue: 'Which signal uses 10Y vs 3M yields?', key: 'yield' },
+  { clue: 'Which signal is the ATR band trend filter?', key: 'supertrend' },
+];
+
+function renderPostLabMatch() {
+  const host = document.getElementById('post-lab-match-host');
+  if (!host) return;
+  const keys = Object.keys(MATCH_LABELS);
+  let idx = 0;
+  let score = 0;
+  function next() {
+    if (idx >= POST_LAB_MATCH.length) {
+      host.innerHTML = `<div class="quiz-score">${score === POST_LAB_MATCH.length ? 'Clean sweep.' : `Score ${score}/${POST_LAB_MATCH.length}`}</div>`;
+      return;
+    }
+    const R = POST_LAB_MATCH[idx];
+    const order = shuffleMatchKeys(keys);
+    host.innerHTML = `<div class="quiz-q">${idx + 1}/${POST_LAB_MATCH.length}. ${R.clue}</div><div class="match-options" id="plm-root"></div>`;
+    const root = document.getElementById('plm-root');
+    order.forEach((k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'match-opt';
+      b.textContent = MATCH_LABELS[k];
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        root.querySelectorAll('.match-opt').forEach((el) => { el.disabled = true; });
+        if (k === R.key) {
+          b.classList.add('correct');
+          score += 1;
+        } else {
+          b.classList.add('wrong');
+          const ok = root.querySelector(`[data-key="${R.key}"]`);
+          if (ok) ok.classList.add('correct');
+        }
+        setTimeout(() => { idx += 1; next(); }, 650);
+      });
+      b.dataset.key = k;
+      root.appendChild(b);
+    });
+  }
+  next();
+}
+
 function bindLearnSurfaces() {
   const surfaces = [
     ['chart-regime', 'regimes', 'Click to learn: regimes + equity'],
@@ -2763,6 +3019,13 @@ function setCrashWindow(key) {
   document.querySelectorAll('#crash-toolbar .pill-btn').forEach((b) => {
     b.classList.toggle('active', b.getAttribute('data-window') === key);
   });
+  const chartWrap = document.getElementById('chart-growth')?.closest('.chart-container');
+  if (chartWrap) {
+    chartWrap.classList.remove('chart-zoom-flash');
+    void chartWrap.offsetWidth;
+    chartWrap.classList.add('chart-zoom-flash');
+    setTimeout(() => chartWrap.classList.remove('chart-zoom-flash'), 500);
+  }
   if (AMCE_STATE.lastData) {
     renderGrowthChart(AMCE_STATE.lastData);
   }
@@ -3105,6 +3368,11 @@ function renderDrawdownChart(data) {
 }
 
 function renderGrowthChart(data) {
+  if (charts.growth) {
+    charts.growth.destroy();
+    charts.growth = null;
+  }
+
   const ranges = {
     all: [null, null],
     dotcom: ['1999-01-01', '2003-12-31'],
@@ -3112,18 +3380,24 @@ function renderGrowthChart(data) {
     covid: ['2019-06-01', '2021-12-31'],
   };
   const [lo, hi] = ranges[AMCE_STATE.crashWindow] || ranges.all;
-  const sliced = (data.equity_curve || []).filter(r => {
-    if (!r.date) return false;
-    if (lo && r.date < lo) return false;
-    if (hi && r.date > hi) return false;
+  const fullCurve = (data.equity_curve_full && data.equity_curve_full.length)
+    ? data.equity_curve_full
+    : (data.equity_curve || []);
+  const sliced = fullCurve.filter((r) => {
+    if (!r || !r.date) return false;
+    if (lo && String(r.date) < lo) return false;
+    if (hi && String(r.date) > hi) return false;
     return true;
   });
-  const ec = sampleData(sliced.length ? sliced : data.equity_curve);
+  const ec = sampleData(sliced.length ? sliced : fullCurve);
 
-  // Find an anchor point in March 2020 for the crash marker
-  let covidIndex = ec.findIndex(r => r.date >= '2020-03-15' && r.date <= '2020-03-31');
-  if (covidIndex === -1) {
-    covidIndex = ec.findIndex(r => r.date >= '2020-01-01' && r.date <= '2020-12-31');
+  const windowHasCovid = (!lo || lo <= '2020-12-31') && (!hi || hi >= '2020-01-01');
+  let covidIndex = -1;
+  if (windowHasCovid) {
+    covidIndex = ec.findIndex((r) => r.date >= '2020-03-15' && r.date <= '2020-03-31');
+    if (covidIndex === -1) {
+      covidIndex = ec.findIndex((r) => r.date >= '2020-01-01' && r.date <= '2020-12-31');
+    }
   }
   const covidData = new Array(ec.length).fill(null);
   if (covidIndex >= 0) {
@@ -3131,6 +3405,17 @@ function renderGrowthChart(data) {
   }
 
   const ctx = document.getElementById('chart-growth').getContext('2d');
+  const covidDataset = (covidIndex >= 0) ? [{
+    label: 'COVID-19 marker',
+    data: covidData,
+    borderColor: 'transparent',
+    backgroundColor: COLORS.red,
+    pointRadius: (ctx) => (ctx.dataIndex === covidIndex ? 6 : 0),
+    pointHoverRadius: (ctx) => (ctx.dataIndex === covidIndex ? 9 : 0),
+    pointStyle: 'circle',
+    showLine: false,
+  }] : [];
+
   charts.growth = new Chart(ctx, {
     type: 'line',
     data: {
@@ -3140,16 +3425,7 @@ function renderGrowthChart(data) {
           fill: true, backgroundColor: COLORS.tealAlpha },
         { label: 'SPY', data: ec.map(r => (r.spy || 1) * 10000), borderColor: COLORS.inkMid, borderWidth: 1.5, borderDash: [6,3], tension: 0.1 },
         { label: '60/40', data: ec.map(r => (r.sixtyforty || 1) * 10000), borderColor: COLORS.inkFaint, borderWidth: 1, borderDash: [2,2], tension: 0.1 },
-        {
-          label: 'COVID-19 Crash',
-          data: covidData,
-          borderColor: 'transparent',
-          backgroundColor: COLORS.red,
-          pointRadius: (ctx) => (ctx.dataIndex === covidIndex ? 6 : 0),
-          pointHoverRadius: (ctx) => (ctx.dataIndex === covidIndex ? 9 : 0),
-          pointStyle: 'circle',
-          showLine: false,
-        },
+        ...covidDataset,
       ],
     },
     options: {
@@ -3168,8 +3444,8 @@ function renderGrowthChart(data) {
           ...customTooltip,
           callbacks: {
             label: (ctx) => {
-              if (ctx.dataset.label === 'COVID-19 Crash') {
-                return "📉 The COVID-19 Crash: While 'Buy and Hold' investors lost 33% of their wealth in weeks, AMCE's VIX and Momentum signals triggered a shift to safe assets, avoiding the devastation.";
+              if (ctx.dataset.label === 'COVID-19 marker') {
+                return "📉 Stress window marker (COVID era). Compare AMCE vs buy-and-hold in the zoomed range.";
               }
               return ctx.dataset.label + ': $' + Math.round(ctx.parsed.y).toLocaleString();
             }
